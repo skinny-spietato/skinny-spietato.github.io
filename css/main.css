@@ -185,6 +185,7 @@ body {
     overflow-x:               hidden;
     text-align:               center;
     min-height:               100vh;
+    min-height:               100dvh;
     position:                 relative;
 
     /* — clearance penisola sbloccato per TRUE GLASS OVERLAY — */
