@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-status="verification">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Skinny Spietato — Preventive Evaluation</title>
+    <meta name="description" content="Technical unit for 2D/3D prototyping and visual engineering. Preventive Evaluation Terminal.">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="logo-pwa.svg">
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/evaluation.css">
+
+    <!-- Leaflet.js CDN — Mappa Geospaziale Step 4 (STEP4-MAP.pdf §2) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Global State Script -->
+    <script src="js/access-state.js"></script>
+</head>
+
+<body data-page="evaluation">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         [01] ACCESS BAR (Importata da index.html)
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <header
+        class="sys-access-bar"
+        id="sys-access-bar"
+        data-status="verification"
+        role="banner"
+        aria-label="System Access Bar"
+    >
+        <a
+            href="index.html"
+            id="sys-logo-link"
+            class="sys-access-bar__logo-link"
+            aria-label="Return to Home - Skinny Spietato"
+        >
+            <svg
+                class="sys-access-bar__logo"
+                viewBox="0 0 295.29 295.69"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                focusable="false"
+            >
+                <path d="m267.55 61.51c-2.01-2.79-4.17-5.58-6.42-8.28-.13-.16-.27-.33-.41-.48-2.74-3.28-5.68-6.5-8.76-9.58s-6.06-5.8-9.22-8.45l-5.31 5.31-84.76 84.76-.02.02-5.28 5.28-72.31-72.3c2.63-2.14 5.35-4.14 8.14-6.01 18.83-12.64 40.97-19.43 64.16-19.43s45.99 6.99 64.99 20l23.29-23.29-.94-.68c-9.7-7.11-20.08-12.94-30.98-17.44-.72-.3-1.45-.6-2.18-.88-1.5-.6-3.03-1.16-4.56-1.7-.07-.03-.15-.05-.23-.08-.49-.17-.98-.34-1.48-.51-14.88-5.04-30.83-7.77-47.42-7.77-45.54-0-86.26 20.58-113.37 52.95l95.02 95.02-5.11 5.11-.08.08-66.92 66.91c-2.14-2.63-4.14-5.35-6.01-8.13-12.64-18.84-19.43-40.98-19.43-64.17s6.99-45.98 20-64.98l-17.92-17.92-5.01-5.01c-18.24 24.58-29.02 55.02-29.02 87.98 0 45.29 20.36 85.81 52.42 112.94l89.84-89.83 1.28-1.28 3.83-3.83 72.08 72.08c-2.64 2.13-5.36 4.13-8.15 5.99-18.78 12.55-40.84 19.28-63.94 19.28s-44.21-6.45-62.72-18.49l-.22.22-22.49 22.5-.44.44c23.69 17.07 52.63 27.31 83.95 27.81.48.01.97.02 1.45.01.32.01.64.01.96.01 31.01-.1 60.66-9.69 85.77-27.74 2.8-2.01 5.58-4.16 8.27-6.41.17-.13.33-.27.49-.41 3.28-2.74 6.5-5.69 9.58-8.77 2.96-2.95 5.8-6.05 8.46-9.21l-5.32-5.32-81.79-81.79-1.49-1.49-1.48-1.48-5.1-5.1 2.04-2.04 70.24-70.24c2.13 2.64 4.13 5.35 5.99 8.15 12.55 18.78 19.28 40.83 19.28 63.93s-6.59 44.69-18.88 63.33l23.6 23.6c.63-.87 1.26-1.75 1.87-2.64v-.63c16.95-24.68 25.91-53.54 25.91-83.66s-9.6-61.02-27.74-86.26z"/>
+            </svg>
+        </a>
+
+        <div class="sys-access-bar__status" role="status" aria-live="polite">
+            <span class="sys-access-bar__label">EVALUATION SYSTEM</span>
+            <div class="sys-access-bar__status-row">
+                <span class="sys-access-bar__dot" id="sys-status-dot" aria-hidden="true"></span>
+                <span class="sys-access-bar__status-text font-mono" id="sys-status-text" aria-label="Status: Under Review">STATUS: UNDER REVIEW<span class="dot" aria-hidden="true">.</span><span class="dot" aria-hidden="true">.</span><span class="dot" aria-hidden="true">.</span></span>
+            </div>
+        </div>
+
+        <div class="sys-access-bar__meta" aria-hidden="true">
+            <span class="sys-access-bar__meta-item font-mono">NODE_SS_BETA</span>
+            <span class="sys-access-bar__meta-item font-mono">V0.0.1</span>
+        </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         [02] CHAT CANVAS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <main class="sys-chat-canvas" id="sys-chat-canvas">
+        <ul class="sys-ghost-state" aria-label="System Rules">
+            <li class="sys-ghost-state__item">
+                <div class="sys-ghost-state__text">
+                    <span class="sys-ghost-state__title font-mono">[01. CONTROLLER & LEGAL BASIS]</span> Administrator of SITOSS. Processing based on pre-contractual measures and legitimate interest in infrastructure protection (GDPR Art. 6.1.b/f).
+                </div>
+            </li>
+            <li class="sys-ghost-state__item">
+                <div class="sys-ghost-state__text">
+                    <span class="sys-ghost-state__title font-mono">[02. IDENTIFIERS & PROCESSING]</span> No commercial cookies. Uses strictly necessary technical identifiers. Data processed via secure backend infrastructure and external LLM clusters (protected by SCCs).
+                </div>
+            </li>
+            <li class="sys-ghost-state__item">
+                <div class="sys-ghost-state__text">
+                    <span class="sys-ghost-state__title font-mono">[03. AUTOMATED SCREENING]</span> 'The Analyst' screens Scope and Budget. Invalid requests trigger permanent exclusion or 'Punishment Protocol'. Users may request human review of automated decisions.
+                </div>
+            </li>
+            <li class="sys-ghost-state__item">
+                <div class="sys-ghost-state__text">
+                    <span class="sys-ghost-state__title font-mono">[04. RETENTION & RIGHTS]</span> Rejected records purged every 30 days; validated leads retained up to 24 months. Users have full GDPR rights (access, erasure) and can contact INFO.SKINNYSPIETATO@GMAIL.COM.
+                </div>
+            </li>
+            <li class="sys-ghost-state__item" style="justify-content: center; margin-top: 1.5rem; pointer-events: auto;">
+                <button id="btn-full-privacy" class="font-mono" style="background: transparent; border: none; padding: 0; font-size: 0.5rem; color: var(--text-secondary); opacity: 0.5; cursor: pointer; pointer-events: auto; letter-spacing: 0.1em; transition: all 0.3s ease;">[FULL PRIVACY POLICY]</button>
+            </li>
+        </ul>
+        
+        <!-- Le chat-row verranno iniettate qui via JS -->
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         [03] CHAT CONTROLLER (Input Area)
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="sys-chat-controller">
+        <div class="sys-chat-input-wrapper glass-diffuse">
+            <textarea
+                class="sys-chat-input font-mono"
+                id="sys-chat-input"
+                placeholder="Awaiting input..."
+                rows="1"
+                aria-label="Terminal input"
+            ></textarea>
+            <button class="sys-chat-send" id="sys-chat-send" aria-label="Invia messaggio">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 20L12 4M12 4L6 10M12 4L18 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         [04] PRIVACY POLICY MODAL
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <div id="sys-privacy-modal" class="sys-privacy-backdrop" aria-hidden="true" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 20000; background: rgba(0,0,0,0.2); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div class="sys-privacy-panel font-mono">
+            <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 0.5rem;">
+                <button id="btn-close-privacy" style="background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; padding: 0; transition: color 0.3s ease;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">&times;</button>
+            </div>
+            <div class="sys-privacy-content">
+                <p><strong style="color: var(--sys-text-primary);">[01. DATA CONTROLLER]</strong><br>The architect and system administrator of SITOSS. Centralized contact and notifications managed exclusively through the domain's extraction nodes. Contact Email for Privacy Inquiries: INFO.SKINNYSPIETATO@GMAIL.COM</p>
+                <p><strong style="color: var(--sys-text-primary);">[02. LEGAL BASIS FOR PROCESSING]</strong><br>The input and processing of information flows within this terminal are subject to the performance of pre-contractual measures (Art. 6.1.b GDPR) and the legitimate interest of the Data Controller (Art. 6.1.f GDPR) in protecting serverless cloud infrastructures from bot vectors or non-commercial intents.</p>
+                <p><strong style="color: var(--sys-text-primary);">[03. COOKIE ARCHITECTURE AND LOCAL IDENTIFIERS]</strong><br>The system does not implement commercial profiling cookies or third-party pixels (Meta, Google Analytics). The environment relies solely on isolated first-party technical identifiers:<br>
+                * Local Storage -> Retention of global operational states (verification, request, verified, allowed, punished).<br>
+                * Temporary Storage -> Secure retention (600s) of the OTP token tied to the user's email address.<br>
+                Prior consent via banner is not required as these are strictly necessary vectors for the logical delivery of the interface.</p>
+                <p><strong style="color: var(--sys-text-primary);">[04. SCOPE OF PROCESSING AND DUAL-TIER PROFILING]</strong><br>The generated text flows, geographical metadata extracted via geofencing mechanisms, and Base64 binary streams loaded into the Staging Area are analyzed by an integrated backend pipeline and external LLM clusters. Data transferred to external LLM providers outside the EU is protected by Standard Contractual Clauses (SCCs).</p>
+                <p><strong style="color: var(--sys-text-primary);">[05. PUNITIVE LOGIC AND AUTOMATED DECISION-MAKING PROCESSES (ART. 22 GDPR)]</strong><br>The software module 'The Analyst' performs automated screening by cross-referencing Scope and Budget. Requests not aligned with the minimum parameters (e.g., BUDGET_TOO_LOW) or lacking commercial intent (CV, reverse engineering) result in the immediate and permanent exclusion of the instance, archived in the isolated registry 'SAVE_REJECTED'. Attempting fraudulent interruption of the input flow triggers the 'Punishment Protocol' with temporary coercive blocking of the interface.</p>
+                <p><strong style="color: var(--sys-text-primary);">[06. RETENTION PERIOD (MINIMIZATION)]</strong><br>Validated and admitted lead data remains imprinted in the 'REQUESTS' database for a maximum of 24 months for commercial follow-up. Records allocated in the 'SAVE_REJECTED' discard registry are subjected to periodic destructive thermal self-purging protocols every 30 days.</p>
+                <p><strong style="color: var(--sys-text-primary);">[07. DATA SUBJECT RIGHTS (ART. 15-21 GDPR)]</strong><br>The user retains the right to request human intervention and review of automated decisions. Furthermore, users have the right to request access, rectification, erasure (right to be forgotten), restriction of processing, and data portability. Requests can be forwarded to the system administrator via the provided privacy email. Users also have the right to lodge a complaint with the National Supervisory Authority.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/evaluation.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnOpen = document.getElementById('btn-full-privacy');
+            const btnClose = document.getElementById('btn-close-privacy');
+            const modal = document.getElementById('sys-privacy-modal');
+            const panel = modal.querySelector('.sys-privacy-panel');
+
+            if(btnOpen && modal && btnClose) {
+                btnOpen.addEventListener('click', () => {
+                    modal.style.display = 'flex';
+                    // Trigger reflow for transition
+                    void modal.offsetWidth;
+                    modal.style.opacity = '1';
+                    panel.style.transform = 'translateY(0)';
+                });
+
+                const closeModal = () => {
+                    modal.style.opacity = '0';
+                    panel.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                    }, 300);
+                };
+
+                btnClose.addEventListener('click', closeModal);
+                modal.addEventListener('click', (e) => {
+                    if(e.target === modal) closeModal();
+                });
+                
+                btnOpen.addEventListener('mouseenter', () => {
+                    btnOpen.style.opacity = '1';
+                    btnOpen.style.color = 'var(--text-primary)';
+                });
+                btnOpen.addEventListener('mouseleave', () => {
+                    btnOpen.style.opacity = '0.5';
+                    btnOpen.style.color = 'var(--text-secondary)';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

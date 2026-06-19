@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SS-COMMAND-CENTER</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="logo-pwa.svg">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- VIEW: LOGIN -->
+  <div id="sys-login-view">
+    <input type="password" id="sys-master-pass" placeholder="CHIAVE MASTER">
+    <button id="btn-login" class="btn-primary">INIZIALIZZA SISTEMA</button>
+  </div>
+
+  <!-- MATRIX VIEWPORT -->
+  <div id="sys-matrix-viewport" style="display: none;">
+    <div id="sys-matrix-track">
+
+  <!-- VIEW: DASHBOARD (SLIDE 1) -->
+  <div id="area-preventivi" class="sys-matrix-slide">
+    <header>
+      <div class="sys-widgets-container">
+        <div class="widget-box"><span class="w-label">CR</span> <span id="w-val-cr" class="w-val">0.0%</span></div>
+        <div class="widget-box"><span class="w-label">REV</span> <span id="w-val-rev" class="w-val">€0</span></div>
+        <div class="widget-box"><span class="w-label">TOT.REV</span> <span id="w-val-tot-rev" class="w-val">€0</span></div>
+        <div class="widget-box"><span class="w-label">PEND</span> <span id="w-val-pend" class="w-val">0</span></div>
+      </div>
+    </header>
+
+    <nav class="nav-tabs">
+      <button class="tab-btn tab-danger" data-target="view-rejected">SCARTATI</button>
+      <button class="tab-btn active" data-target="view-pending">IN SOSPESO</button>
+      <button class="tab-btn" data-target="view-waiting">ATTESA FONDI</button>
+      <button class="tab-btn" data-target="view-active">ATTIVI</button>
+      <button class="tab-btn" data-target="view-completed">COMPLETATI</button>
+      <button class="tab-btn tab-frozen" data-target="view-frozen">CONGELATI</button>
+    </nav>
+
+    <!-- SEARCH BAR GLOBALE E SORTING (Mod 3A/4A) -->
+    <div class="search-bar-container" style="position: relative;">
+      <input type="text" id="sys-global-search" placeholder="CERCA ID, NOME O EMAIL..." autocomplete="off" style="padding-right: 40px;">
+      <button id="btn-sort-list" title="ORDINE: CRONOLOGICO (PIÙ RECENTI)" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px 8px; display: flex; align-items: center; justify-content: center; transition: color var(--anim-snap);">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9M4 12h7M4 18h5M15 15l3 3 3-3M18 6v12"/></svg>
+      </button>
+    </div>
+
+    <!-- CONTENT: PENDING -->
+    <main id="view-pending" class="tab-content">
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>ID</th>
+            <th>Nome Cliente</th>
+            <th>Email</th>
+            <th>Scope</th>
+            <th>Budget</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody id="table-body-pending">
+          <!-- Populated via JS -->
+        </tbody>
+      </table>
+    </main>
+
+    <!-- CONTENT: WAITING FUNDS -->
+    <main id="view-waiting" class="tab-content" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>ID</th>
+            <th>Nome Cliente</th>
+            <th>Email</th>
+            <th>Budget</th>
+            <th>Acconto</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody id="table-body-waiting">
+          <!-- Populated via JS -->
+        </tbody>
+      </table>
+    </main>
+
+    <!-- CONTENT: ACTIVE -->
+    <main id="view-active" class="tab-content" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>ID</th>
+            <th>Nome Cliente</th>
+            <th>Email</th>
+            <th>Scope</th>
+            <th>Budget</th>
+            <th>Ciclo</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody id="table-body-active">
+          <!-- Populated via JS -->
+        </tbody>
+      </table>
+    </main>
+
+    <!-- CONTENT: REJECTED -->
+    <main id="view-rejected" class="tab-content" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>ID</th>
+            <th>Nome Cliente</th>
+            <th>Email</th>
+            <th>Motivo Scarto</th>
+            <th>Stato</th>
+          </tr>
+        </thead>
+        <tbody id="table-body-rejected">
+          <!-- Populated via JS -->
+        </tbody>
+      </table>
+    </main>
+
+    <!-- CONTENT: FROZEN -->
+    <main id="view-frozen" class="tab-content" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>ID</th>
+            <th>Nome Cliente</th>
+            <th>Email</th>
+            <th>Budget</th>
+            <th>Log Sospensione</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody id="table-body-frozen">
+          <!-- Populated via JS -->
+        </tbody>
+      </table>
+    </main>
+
+    <!-- CONTENT: COMPLETED -->
+    <main id="view-completed" class="tab-content" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>ID</th>
+            <th>Nome Cliente</th>
+            <th>Email</th>
+            <th>Budget</th>
+            <th>Ciclo</th>
+            <th>Stato</th>
+          </tr>
+        </thead>
+        <tbody id="table-body-completed">
+          <!-- Populated via JS -->
+        </tbody>
+      </table>
+    </main>
+
+  </div>
+
+  <!-- VIEW: NEWSLETTER (SLIDE 2) -->
+  <div id="area-newsletter" class="sys-matrix-slide">
+
+
+    <main class="broadcast-container">
+
+      <!-- A. Pannello di Targeting -->
+      <div class="broadcast-targeting-panel">
+
+        <div id="broadcast-target-count" class="broadcast-node-counter">TARGET: 0 NODI OTP-VERIFICATI</div>
+
+        <div class="input-group">
+          <label class="checkbox-label" style="display:flex; align-items:center; gap:10px; cursor:pointer; color:var(--text-primary); font-size:10px; letter-spacing:0.05em; text-transform:uppercase;">
+            <input type="checkbox" id="broadcast-global-toggle" checked style="accent-color:var(--sys-trigger-active); transform:scale(1.2); flex-shrink:0;">
+            Invia a tutte le entità OTP-verificate
+          </label>
+        </div>
+
+        <div class="input-group">
+          <label>Filtro Budget</label>
+          <select id="broadcast-filter-budget" disabled>
+            <option value="ALL">Tutti i tier</option>
+            <option value="&lt; 600€">&lt; 600€</option>
+            <option value="600€ - 1k">600€ — 1k</option>
+            <option value="1k-5k">1k — 5k</option>
+            <option value="5k-10k">5k — 10k</option>
+            <option value="&gt; 10k">&gt; 10k</option>
+            <option value="TIER_MID">≥ 1k (mid + high)</option>
+            <option value="TIER_HIGH">≥ 5k (high only)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Tipo Entità</label>
+          <select id="broadcast-filter-type" disabled>
+            <option value="ALL">Tutte le entità</option>
+            <option value="COMPANY">Company</option>
+            <option value="STARTUP">Startup</option>
+            <option value="PRIVATE">Private</option>
+          </select>
+        </div>
+
+        <div class="input-group" style="margin-top:auto;">
+          <label>Vault Engine (comma separated)</label>
+          <div class="sys-vault-container">
+            <textarea id="broadcast-blacklist" rows="3" placeholder="email@dominio.it, altra@email.com..." style="flex:1; font-family:var(--font-mono); font-size:11px; resize:none; background-color:var(--surface-raised); border:var(--sys-border-light); color:var(--text-primary); padding:10px 12px; border-radius:var(--radius-sm); outline:none;"></textarea>
+            <button id="btn-vault-toggle" class="sys-vault-toggle sys-state-blacklist">BLACKLIST</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- B. Editor Terminale -->
+      <div class="broadcast-editor-panel">
+
+        <div class="input-group">
+          <label>Oggetto Trasmissione</label>
+          <input type="text" id="broadcast-subject" placeholder="SYS_SUBJECT //" style="font-weight:600;">
+        </div>
+
+        <div class="input-group" style="margin-bottom:0; flex:1; display:flex; flex-direction:column;">
+          <label>Corpo del Messaggio</label>
+          <textarea id="broadcast-body" rows="10" placeholder="[Inserire testo trasmissione — il sistema aggiunge automaticamente header e footer di sistema]" style="flex:1;"></textarea>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- C. Protocol Scheduler -->
+    <section class="broadcast-scheduler-section">
+      <div class="broadcast-scheduler-header">
+        <span class="broadcast-scheduler-title">PROTOCOL SCHEDULER</span>
+        <span id="broadcast-schedule-status" class="broadcast-scheduler-status">NESSUNA SCHEDULAZIONE ATTIVA</span>
+      </div>
+
+      <div class="broadcast-scheduler-grid">
+
+        <div class="input-group">
+          <label>Frequenza Automatica</label>
+          <select id="broadcast-schedule-freq">
+            <option value="MANUAL">Solo manuale (default)</option>
+            <option value="MONTHLY">Ogni mese</option>
+            <option value="BIMONTHLY">Ogni 2 mesi</option>
+            <option value="QUARTERLY">Ogni 3 mesi (Trimestrale)</option>
+            <option value="SEMI_ANNUAL">Ogni 6 mesi (Semestrale)</option>
+            <option value="ANNUAL">Annuale</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Auto-Trigger su Evento <span style="color:var(--text-muted); font-size:8px;">(CTRL/CMD + clic)</span></label>
+          <select id="broadcast-trigger-event" multiple size="4" style="min-height:82px;">
+            <option value="NONE" selected>Nessun trigger automatico</option>
+            <option value="AT_COMPLETION">Al completamento di un lavoro</option>
+            <option value="AT_FREEZE">Al congelamento di un progetto</option>
+            <option value="AT_REJECTION">Allo scarto manuale di un'istanza</option>
+            <option value="AT_PAYMENT">Al pagamento confermato</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="broadcast-scheduler-actions">
+        <button id="btn-save-schedule" class="btn-primary" style="font-size:10px; padding:8px 20px;">SALVA SCHEDULAZIONE</button>
+        <button id="btn-execute-broadcast" class="btn-primary" disabled style="font-size:10px; padding:8px 20px; letter-spacing:0.06em;">[ BROADCAST MANUALE ]</button>
+        <button id="btn-clear-schedule" class="btn-frost" style="display:none !important;">✕ RIMUOVI SCHEDULAZIONE</button>
+      </div>
+
+      <div id="broadcast-progress-container" style="display:none; margin-top:12px;">
+        <div style="width:100%; background:rgba(255,255,255,0.06); height:3px; border-radius:2px; overflow:hidden;">
+          <div id="broadcast-progress-bar" style="width:0%; height:100%; background:var(--sys-trigger-active); transition:width 0.3s ease;"></div>
+        </div>
+        <div id="broadcast-status-text" style="font-family:var(--font-mono); font-size:9px; color:var(--sys-trigger-active); margin-top:10px; text-align:center; text-transform:uppercase; letter-spacing:0.1em;">TRANSMITTING... 0%</div>
+      </div>
+
+      <div id="sys-active-schedules-matrix" class="sys-matrix-grid"></div>
+
+    </section>
+
+  </div>
+
+
+  <!-- VIEW: ARCHIVIO (SLIDE 4) -->
+  <div id="area-archivio" class="sys-matrix-slide">
+    <nav class="nav-tabs">
+      <button class="tab-btn-archivio active" data-target="view-archivio-attivita">ATTIVITÀ</button>
+      <button class="tab-btn-archivio" data-target="view-archivio-utenti">UTENTI</button>
+    </nav>
+    
+    <!-- A. Sub-View: ATTIVITÀ (Ledger Mensile) -->
+    <main id="view-archivio-attivita" class="sys-sub-view">
+      <div id="ledger-months-container">
+        <!-- Popolato dinamicamente da renderArchivioMensile() dopo il login -->
+        <div style="color: var(--text-muted); font-family: var(--font-mono); font-size: 11px; padding: 20px; text-align: center;">[AUTENTICAZIONE RICHIESTA PER ACCEDERE AL LEDGER]</div>
+      </div>
+    </main>
+
+    <!-- B. Sub-View: UTENTI (Registro Entità) -->
+    <main id="view-archivio-utenti" class="sys-sub-view" style="display: none;">
+      <div class="search-bar-container" style="margin-bottom: 16px;">
+        <input type="text" id="sys-user-search" class="sys-search-input" placeholder="FILTRA PER EMAIL O NOME..." autocomplete="off">
+      </div>
+
+      <!-- Lista Utenti Pre-caricata -->
+      <div id="utenti-list-container" style="margin-bottom: 20px;">
+        <!-- Popolato dinamicamente da renderListaUtenti() -->
+      </div>
+      
+      <div id="user-dossier-panel" style="display:none;">
+        <div class="user-dossier-grid">
+          <!-- 1. Header Identità -->
+          <div class="dossier-identity-header">
+            <h2 id="dossier-email">utente@esempio.com</h2>
+            <div id="dossier-name">Mario Rossi</div>
+            <div id="dossier-ltv">LTV: <span class="sys-highlight sys-highlight--money">€0</span></div>
+            <div class="trust-tags-container">
+              <span class="trust-tag trust-tag--positive">[FAST_PAYER]</span>
+            </div>
+          </div>
+          
+          <!-- 2. Storico Istanze -->
+          <div class="dossier-history">
+            <h3>STORICO ISTANZE</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID Progetto</th>
+                  <th>Status</th>
+                  <th>Data</th>
+                </tr>
+              </thead>
+              <tbody id="dossier-history-body">
+                <!-- Popolato da JS -->
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- 3. Radar Comunicazioni -->
+          <div class="dossier-audit">
+            <h3>RADAR COMUNICAZIONI</h3>
+            <div class="audit-trail-timeline">
+              <!-- Mockup log -->
+              <div class="audit-dot">
+                <div class="audit-text">[SYS_MAIL] BROADCAST INVIATO: AGGIORNAMENTO PROTOCOLLO</div>
+                <div class="audit-date">2026-05-01 10:00:00</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 4. Zona Pericolo -->
+          <div class="dossier-danger-zone">
+            <button id="btn-gdpr-purge" class="btn-danger" style="width: 100%;">[ ESEGUI PROTOCOLLO OBLIO ]</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- VIEW: REPORT ERRORI (SLIDE 5) -->
+  <div id="area-errori" class="sys-matrix-slide">
+    
+    <div id="sys-panic-banner" style="display: none;">[CRITICAL ALERT: AI CORE OFFLINE] - INIZIALIZZARE CONTROMISURE</div>
+    
+    <nav class="nav-tabs">
+      <button class="tab-btn-errori active" data-target="view-errori-network">NETWORK LOGS (EMAIL)</button>
+      <button class="tab-btn-errori" data-target="view-errori-blackbox">SYSTEM DIAGNOSTICS (BLACK BOX)</button>
+    </nav>
+    
+    <!-- View 1: Network Logs -->
+    <main id="view-errori-network" class="sys-sub-view">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <span id="network-log-count" style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;color:var(--text-muted);text-transform:uppercase;">LOG EMAIL — 0 RECORD</span>
+        <button id="btn-refresh-logs" class="btn-frost" style="font-size:10px; padding:4px 12px;">↻ AGGIORNA LOG</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>TIMESTAMP</th>
+            <th>ID ISTANZA</th>
+            <th>DESTINATARIO</th>
+            <th>TRIGGER</th>
+            <th>OGGETTO</th>
+            <th>STATUS</th>
+            <th>ERRORE</th>
+            <th>MITTENTE</th>
+          </tr>
+        </thead>
+        <tbody id="table-body-network-logs">
+          <!-- Popolato dinamicamente da renderNetworkLogs() -->
+        </tbody>
+      </table>
+    </main>
+
+    <!-- View 2: System Diagnostics -->
+    <main id="view-errori-blackbox" class="sys-sub-view" style="display: none;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <span id="blackbox-log-count" style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;color:var(--text-muted);text-transform:uppercase;">LOG SISTEMA — 0 EVENTI</span>
+        <button id="btn-refresh-blackbox" class="btn-frost" style="font-size:10px; padding:4px 12px;">↻ AGGIORNA</button>
+      </div>
+      <div id="blackbox-terminal" class="terminal-log-container">
+        <!-- Log iniettati dinamicamente da renderBlackBox() -->
+      </div>
+    </main>
+  </div>
+
+
+
+  </div> </div>
+
+  <!-- MODAL: PROPOSAL EXECUTION -->
+  <div id="sys-proposal-modal" style="display: none;">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: var(--sys-border-light); padding-bottom: 14px; margin-bottom: 4px; flex-shrink: 0;">
+        <h2 style="margin: 0; font-size: 15px; letter-spacing: 0.04em;">PROTOCOLLO ESECUZIONE PREVENTIVO</h2>
+      </div>
+
+      <div class="input-group">
+        <label for="prop-project-name">Nome Progetto</label>
+        <input type="text" id="prop-project-name" placeholder="Es. PROGETTO ALPHA">
+      </div>
+
+      <div class="input-group">
+        <label for="input-days-arch">Giorni Architettura</label>
+        <input type="number" id="input-days-arch" min="0" placeholder="Es. 3">
+      </div>
+      
+      <div class="input-group">
+        <label for="input-days-prod">Giorni Produzione</label>
+        <input type="number" id="input-days-prod" min="0" placeholder="Es. 7">
+      </div>
+      
+      <div class="input-group">
+        <label for="input-notes">Note Tecniche</label>
+        <input type="text" id="input-notes" placeholder="Dettagli aggiuntivi (opzionale)">
+      </div>
+
+      <!-- ASSET BUILDER (Mod 1A) -->
+      <div class="input-group">
+        <label>Asset del Progetto</label>
+        <div id="asset-builder-container"></div>
+        <button id="btn-add-asset" type="button">+ AGGIUNGI ASSET</button>
+      </div>
+
+      <div class="input-group">
+        <label for="input-price">Prezzo Totale da Preventivare (€)</label>
+        <input type="number" id="input-price" min="0" placeholder="Es. 2500">
+      </div>
+
+      <!-- FINANCIAL OVERRIDE BLOCK (Mod 1B) -->
+      <div class="financial-override-block">
+        <div class="fin-calc-row">
+          <span class="fin-label">ACCONTO CALCOLATO (ALGORITMO)</span>
+          <span id="fin-calc-display">— INSERIRE PREZZO</span>
+        </div>
+        <div class="input-group" style="margin: 0;">
+          <label for="override-acconto">OVERRIDE STRUTTURA FINANZIARIA</label>
+          <select id="override-acconto">
+            <option value="AUTO">AUTO (Default algoritmo)</option>
+            <option value="50">50% — ACCONTO STANDARD</option>
+            <option value="75">75% — ACCONTO ESTESO</option>
+            <option value="100">100% — SALDO ANTICIPATO COMPLETO</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PDF PREVIEW (Mod 1C) -->
+      <div id="pdf-preview-container">
+        <span class="pdf-preview-icon">📄</span>
+        <span class="pdf-preview-text">DRAFT GENERATO —</span>
+        <a id="pdf-preview-link" href="#" target="_blank" rel="noopener noreferrer">APRI DRAFT ↗</a>
+      </div>
+
+      <!-- TWO-STEP ACTIONS (Mod 1C) -->
+      <div class="modal-actions">
+        <button id="btn-close-modal">ANNULLA</button>
+        <button id="btn-generate-draft" class="btn-primary">GENERA DRAFT PDF</button>
+        <button id="btn-approve-send" disabled>✓ APPROVA E TRASMETTI</button>
+      </div>
+  </div>
+  </div>
+
+  <!-- MODAL: INVOICE / RICEVUTA CONFIGURAZIONE -->
+  <div id="sys-invoice-modal" style="display: none;">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: var(--sys-border-light); padding-bottom: 14px; margin-bottom: 4px; flex-shrink: 0;">
+        <h2 style="margin: 0; font-size: 15px; letter-spacing: 0.04em;">PROTOCOLLO EMISSIONE RICEVUTA</h2>
+      </div>
+
+      <div class="invoice-section-header">DATI PRESTATORE D'OPERA (SITOSS)</div>
+      <div class="input-group">
+        <label for="inv-prestatore-cf">Codice Fiscale Prestatore</label>
+        <input type="text" id="inv-prestatore-cf" placeholder="Es. PSNRND90A01H501F">
+      </div>
+      <div class="input-group">
+        <label for="inv-prestatore-indirizzo">Indirizzo Prestatore</label>
+        <input type="text" id="inv-prestatore-indirizzo" placeholder="Es. Via Roma 1">
+      </div>
+      <div class="input-group">
+        <label for="inv-prestatore-capcitta">CAP / Città Prestatore</label>
+        <input type="text" id="inv-prestatore-capcitta" placeholder="Es. 00100 Roma">
+      </div>
+
+      <div class="invoice-section-header">DATI RICHIEDENTE (CLIENTE)</div>
+      <div class="input-group">
+        <label for="inv-cliente-nome">Nome/Ragione Sociale</label>
+        <input type="text" id="inv-cliente-nome" placeholder="Es. Mario Rossi">
+      </div>
+      <div class="input-group">
+        <label for="inv-cliente-cf">Codice Fiscale / P.IVA</label>
+        <input type="text" id="inv-cliente-cf" placeholder="Obbligatorio">
+      </div>
+      <div class="input-group">
+        <label for="inv-cliente-indirizzo">Indirizzo Cliente</label>
+        <input type="text" id="inv-cliente-indirizzo" placeholder="Obbligatorio">
+      </div>
+      <div class="input-group">
+        <label for="inv-cliente-capcitta">CAP / Città Cliente</label>
+        <input type="text" id="inv-cliente-capcitta" placeholder="Obbligatorio">
+      </div>
+
+      <div class="invoice-section-header">ESTRAZIONE VALORE (FINANCIAL METRICS)</div>
+      <div class="input-group">
+        <label for="inv-oggetto">Oggetto Progetto (Brief)</label>
+        <input type="text" id="inv-oggetto" placeholder="Es. FULL SITE">
+      </div>
+      <div class="input-group">
+        <label for="inv-compenso-lordo">Compenso Lordo (€) - Modificabile</label>
+        <input type="number" id="inv-compenso-lordo" min="0" placeholder="Es. 1000" oninput="aggiornaCalcoloFattura()">
+      </div>
+      
+      <div class="input-group" style="flex-direction: row; align-items: center; gap: 8px;">
+        <input type="checkbox" id="inv-ritenuta-check" checked onchange="aggiornaCalcoloFattura()" style="width: 16px; height: 16px;">
+        <label for="inv-ritenuta-check" class="invoice-checkbox-label" style="margin: 0; cursor: pointer;">Applica Ritenuta d'Acconto (20%) - Sostituto d'imposta</label>
+      </div>
+
+      <div class="financial-override-block">
+        <div class="invoice-calc-row">
+          <span class="fin-label">RITENUTA D'ACCONTO (20%)</span>
+          <span id="inv-calc-ritenuta">- € 0,00</span>
+        </div>
+        <div class="invoice-calc-row">
+          <span class="fin-label">MARCA DA BOLLO (> 77,47 €)</span>
+          <span id="inv-calc-bollo" style="color: var(--text-muted); font-weight: normal;">A tuo carico (Non addebitato)</span>
+        </div>
+        <div class="invoice-calc-row invoice-calc-highlight" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 8px;">
+          <span class="fin-label" style="color: #fff;">IMPORTO NETTO DA TRASFERIRE</span>
+          <span id="inv-calc-netto" style="color: #fff; font-weight: bold;">€ 0,00</span>
+        </div>
+      </div>
+
+      <!-- PDF PREVIEW -->
+      <div id="inv-pdf-preview-container" style="display: none; align-items: center; gap: 10px; margin-top: 15px; padding: 12px; background: rgba(157, 185, 126, 0.1); border: 1px solid rgba(157, 185, 126, 0.3); border-radius: 6px;">
+        <span class="pdf-preview-icon">📄</span>
+        <span class="pdf-preview-text" style="color: var(--sys-trigger-active); font-size: 11px;">DRAFT FATTURA PRONTO —</span>
+        <a id="inv-pdf-preview-link" href="#" target="_blank" rel="noopener noreferrer" style="color: white; font-size: 11px; text-decoration: underline;">APRI PDF ↗</a>
+      </div>
+
+      <!-- TWO-STEP ACTIONS -->
+      <div class="modal-actions" style="margin-top: 20px;">
+        <button id="btn-close-invoice" onclick="chiudiModaleFattura()">ANNULLA</button>
+        <button id="btn-generate-invoice" class="btn-primary" onclick="eseguiGeneraFattura()">GENERA DRAFT RICEVUTA</button>
+        <button id="btn-confirm-invoice" disabled onclick="eseguiConfermaFattura()">✓ CONFERMA E INVIA FATTURA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DATA INSPECTION (MOD A) -->
+  <div id="sys-inspect-modal" style="display: none;">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 20px;">
+        <h2 style="margin: 0;">ISPEZIONE DATI ISTANZA</h2>
+        <button id="btn-close-inspect" onclick="chiudiIspezione()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0 10px;">&times;</button>
+      </div>
+      
+      <div class="inspect-scroll-area">
+        <div class="inspect-section">
+          <div class="inspect-section-header"><span>SOCIAL LINK</span><span class="inspect-toggle-icon">+</span></div>
+          <div class="inspect-section-body" style="display: none;">
+            <div id="inspect-social" class="inspect-value">N/A</div>
+            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
+              <span style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; color: rgba(255,255,255,0.3); text-transform: uppercase;">CELLULARE</span>
+              <div id="inspect-phone" class="inspect-value" style="margin-top: 4px; color: rgba(157, 185, 126, 0.75); font-size: 0.85rem;">N/A</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="inspect-section">
+          <div class="inspect-section-header"><span>BRIEF UTENTE / GOALS</span><span class="inspect-toggle-icon">+</span></div>
+          <div class="inspect-section-body" style="display: none;">
+            <div id="inspect-brief" class="inspect-value">N/A</div>
+          </div>
+        </div>
+        
+        <div class="inspect-section">
+          <div class="inspect-section-header"><span>ASSET DRIVE</span><span class="inspect-toggle-icon">+</span></div>
+          <div class="inspect-section-body" style="display: none;">
+            <div id="inspect-drive" class="inspect-value">N/A</div>
+          </div>
+        </div>
+        
+        <div class="inspect-section">
+          <div class="inspect-section-header"><span>TRANSCRIPT CHAT</span><span class="inspect-toggle-icon">+</span></div>
+          <div class="inspect-section-body" style="display: none;">
+            <div id="inspect-chat" class="inspect-chat-canvas"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTE INTERNE CRM (Mod 2A) -->
+      <div class="inspect-notes-block">
+        <span class="section-label">NOTE INTERNE (CRM)</span>
+        <textarea id="inspect-internal-notes" rows="4" placeholder="Annotazioni operative, follow-up, osservazioni interne..."></textarea>
+        <button id="btn-update-notes" class="btn-primary">AGGIORNA NOTE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM ALERT OVERLAY (Mod 3C) -->
+  <div id="sys-custom-alert">
+    <div class="sys-alert-box">
+      <div class="sys-alert-icon" id="sys-alert-icon">⚠️</div>
+      <div id="sys-alert-title">AVVISO DI SISTEMA</div>
+      <div id="sys-alert-msg"></div>
+      <input type="text" id="sys-custom-input" placeholder="Inserire motivazione...">
+      <div class="sys-alert-actions">
+        <button id="sys-alert-cancel">ANNULLA</button>
+        <button id="sys-alert-confirm">CONFERMA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SYSTEM TOASTS CONTAINER -->
+  <div id="sys-toast-container"></div>
+
+  <!-- PDF ENGINE (jsPDF + AutoTable) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- SYSTEM KERNEL -->
+  <script src="admin.js"></script>
+
+  <!-- PWA SERVICE WORKER REGISTRATION -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('[PWA] Service Worker registrato con successo.', reg.scope))
+          .catch(err => console.error('[PWA] Errore registrazione Service Worker:', err));
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,645 @@
+/* ==========================================================================
+   SITOSS NODEBETAV1.0.0 — VISUAL ENGINEERING OPERATING SYSTEM
+   DESIGN SYSTEM GLOBALE v2.0 — Apple Glassmorphism Calibration
+   Architettura: palette, tipografia locale, glass system, componenti base
+   ========================================================================== */
+
+/* ==========================================================================
+   [01] FONT LOCALI — @font-face
+   Percorsi relativi dalla root /SITO/ → ../FONT/
+   ========================================================================== */
+
+/* Inter — UI principale */
+@font-face {
+    font-family: 'Inter';
+    src: url('../../FONT/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../../FONT/Inter/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: block;
+}
+
+/* Source Serif 4 — documentazione, testi istituzionali */
+@font-face {
+    font-family: 'Source Serif 4';
+    src: url('../../FONT/Source_Serif_4/SourceSerif4-VariableFont_opsz,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: 'Source Serif 4';
+    src: url('../../FONT/Source_Serif_4/SourceSerif4-Italic-VariableFont_opsz,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: block;
+}
+
+/* JetBrains Mono — dati grezzi, label tecniche, status bar, output bot */
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('../../FONT/JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 800;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('../../FONT/JetBrains_Mono/JetBrainsMono-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 800;
+    font-style: italic;
+    font-display: block;
+}
+
+/* ==========================================================================
+   [02] CSS CUSTOM PROPERTIES — DESIGN TOKENS
+   ========================================================================== */
+
+:root {
+    /* ── PALETTE UFFICIALE ───────────────────────────────────────────────── */
+    --sys-bg-primary:      #191919;              /* Fondo sistema — Sincronizzato con Access Bar (rgb 25,25,25) */
+    --sys-bg-secondary:    rgba(255, 255, 255, 0.06); /* Superfici secondarie — rgba, integra con blur */
+    --sys-text-primary:    rgba(255, 255, 255, 0.92); /* Testo principale — quasi bianco, leggera trasparenza */
+    --sys-trigger-active:  #9DB97E;              /* Trigger attivi, CTA primaria */
+
+    /* ── TEXT HIERARCHY — Opacità su bianco per integrazione blur ────────── */
+    --text-primary:   rgba(255, 255, 255, 0.92); /* Corpo testo, UI labels */
+    --text-title:     rgba(255, 255, 255, 0.95); /* Titoli H1-H3, massima leggibilità */
+    --text-secondary: rgba(255, 255, 255, 0.55); /* Sottotitoli, metadati, caption */
+    --text-muted:     rgba(255, 255, 255, 0.38); /* Ghost — timestamp, placeholder */
+    --text-disabled:  rgba(255, 255, 255, 0.20); /* Elementi inattivi */
+
+    /* ── ALIAS SEMANTICI ─────────────────────────────────────────────────── */
+    --bg-color:       var(--sys-bg-primary);
+    --border-color:   rgba(255, 255, 255, 0.10); /* Bordo neutro — sostituisce grigio solido */
+    --cta-color:      var(--sys-trigger-active);
+
+    /* ── GLASS SYSTEM — Apple Glassmorphism ─────────────────────────────── */
+    --sys-glass-bg:          rgba(25, 25, 25, 0.65);   /* Materiale base vetro */
+    --sys-glass-blur:        blur(20px) saturate(150%); /* Blur + saturazione cinematic */
+    --sys-glass-bg-light:    rgba(255, 255, 255, 0.04); /* Vetro chiaro — superfici secondarie */
+    --sys-glass-bg-elevated: rgba(40, 40, 40, 0.70);   /* Vetro elevato — pannelli, sidebar */
+    --sys-glass-bg-solid:    rgba(30, 30, 30, 0.85);   /* Vetro denso — modali, tooltip */
+
+    /* ── SURFACE SYSTEM — Gerarchia di elevazione ────────────────────────── */
+    --surface-base:     var(--sys-bg-primary);             /* Livello 0 — sfondo pagina */
+    --surface-raised:   rgba(255, 255, 255, 0.03);         /* Livello 1 — card base */
+    --surface-overlay:  rgba(255, 255, 255, 0.06);         /* Livello 2 — pannelli sovrapposti */
+    --surface-hover:    rgba(255, 255, 255, 0.08);         /* Hover — feedback interattivo */
+    --surface-active:   rgba(255, 255, 255, 0.12);         /* Pressed — stato attivo */
+
+    /* ── BORDER SYSTEM — Luce di bordo ──────────────────────────────────── */
+    --sys-border-light:  1px solid rgba(255, 255, 255, 0.08); /* Bordo luce standard */
+    --sys-border-medium: 1px solid rgba(255, 255, 255, 0.14); /* Bordo luce enfatizzato */
+    --sys-border-glow:   1px solid rgba(157, 185, 126, 0.25); /* Bordo trigger attivo */
+    --sys-border-subtle: 1px solid rgba(255, 255, 255, 0.04); /* Bordo quasi invisibile — divisori interni */
+
+    /* ── SHADOW SYSTEM — Profondità Apple ────────────────────────────────── */
+    --shadow-sm:  0 2px 8px rgba(0, 0, 0, 0.25);                            /* Card, elementi leggeri */
+    --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.35);                           /* Pannelli, dropdown */
+    --shadow-lg:  0 8px 32px rgba(0, 0, 0, 0.45);                           /* Modali, overlay */
+    --shadow-xl:  0 16px 48px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0,0,0,0.3); /* Peninsula, tooltip elevati */
+
+    /* ── RADIUS SYSTEM — Apple Standards ────────────────────────────────── */
+    --radius-xl:   24px;  /* Sezioni grandi, Peninsula, Modali */
+    --radius-lg:   16px;  /* Card, contenitori medi */
+    --radius-md:   12px;  /* Bottoni, Input */
+    --radius-sm:    8px;  /* Elementi interni, thumbnail */
+    --radius-xs:    6px;  /* Badge, chip, micro-elementi */
+    --radius-full: 9999px; /* Pill — toggle, tag */
+    /* DEPRECATED: --radius-zero e --radius-soft — mantenuti per retrocompatibilità */
+    --radius-zero:  0px;
+    --radius-soft:  var(--radius-md);
+
+    /* ── MOTION SYSTEM — Snap Meccanico + Smooth ─────────────────────────── */
+    --anim-snap:    150ms cubic-bezier(0.4, 0, 0.2, 1); /* Snap meccanico — click, toggle */
+    --anim-smooth:  300ms cubic-bezier(0.4, 0, 0.2, 1); /* Transizione fluida — pannelli, modali */
+    --anim-ease-out: 400ms cubic-bezier(0.0, 0, 0.2, 1); /* Decelerazione — entrata elementi */
+    --anim-spring:  500ms cubic-bezier(0.34, 1.56, 0.64, 1); /* Spring — bounce leggero, feedback */
+
+    /* Legacy aliases — retrocompatibilità con home.js / evaluation.js */
+    --transition-mechanical: var(--anim-smooth);
+    --transition-fast:       var(--anim-snap);
+
+    /* ── TIPOGRAFIA ──────────────────────────────────────────────────────── */
+    --font-ui:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-doc:    'Source Serif 4', 'Georgia', serif;
+    --font-mono:   'JetBrains Mono', 'Courier New', monospace;
+    --font-base-size: 0.9375rem; /* 15px */
+
+    /* ── SPACING SYSTEM ──────────────────────────────────────────────────── */
+    --space-xs:   0.25rem;
+    --space-sm:   0.5rem;
+    --space-md:   1rem;
+    --space-lg:   2rem;
+    --space-xl:   4rem;
+
+    /* ── ACCESS BAR ──────────────────────────────────────────────────────── */
+    --access-bar-height: 52px;
+
+    /* ── Z-INDEX STACK ───────────────────────────────────────────────────── */
+    --z-content:    10;
+    --z-overlay:    50;
+    --z-panel:     100;
+    --z-access-bar: 200;
+    --z-modal:     300;
+}
+
+/* ==========================================================================
+   [03] RESET CHIRURGICO
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+    margin:     0;
+    padding:    0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: auto; /* Nessuno smooth scroll — movimenti meccanici */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    font-family:              var(--font-ui);
+    font-size:                var(--font-base-size);
+    font-weight:              400;
+    line-height:              1.35;
+    color:                    var(--text-primary);
+    background-color:         var(--bg-color);
+    -webkit-font-smoothing:   antialiased;
+    -moz-osx-font-smoothing:  grayscale;
+    overflow-x:               hidden;
+    text-align:               center;
+    min-height:               100vh;
+    position:                 relative;
+
+    /* — clearance penisola sbloccato per TRUE GLASS OVERLAY — */
+    /* padding-top: calc(var(--access-bar-height) + 27px); */
+}
+
+/* — LAYER 2: NOISE / GRANA DIGITALE —
+   Pseudo-elemento fisso che sovrappone texture SVG con rumore digitale.
+   opacity bassa per non sovrastare il contenuto.                       */
+body::before {
+    content:  '';
+    position: fixed;
+    inset:    0;
+    z-index:  0;
+    pointer-events: none;
+
+    /* SVG noise inline — pattern Perlin-like a frequenza alta */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size:   200px 200px;
+    opacity: 0.028; /* Grana sottile — materica, non invasiva */
+    mix-blend-mode: overlay;
+}
+
+/* Tutti i contenuti sopra il noise layer */
+body > * {
+    position: relative;
+    z-index:  var(--z-content);
+}
+
+/* ==========================================================================
+   [04] TIPOGRAFIA — GERARCHIA INVIOLABILE
+   ========================================================================== */
+
+h1, h2, h3, h4, h5, h6 {
+    font-family:    var(--font-ui);
+    font-weight:    500;
+    letter-spacing: -0.02em;
+    line-height:    1.1;
+    color:          var(--text-title); /* Titoli usano opacità 0.95 — massimo contrasto su glass */
+}
+
+p, li {
+    font-family: var(--font-ui);
+    line-height: 1.5;
+}
+
+/* Classe documenntazione — fonte istituzionale */
+.font-doc {
+    font-family: var(--font-doc);
+}
+
+/* Classe dati tecnici — monospazio di sistema */
+.font-mono,
+code,
+pre,
+kbd,
+samp {
+    font-family: var(--font-mono);
+    font-size:   0.875em;
+}
+
+a {
+    color:           inherit;
+    text-decoration: none;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+img, video {
+    display:   block;
+    max-width: 100%;
+}
+
+/* ==========================================================================
+   [05] LAYOUT GLOBALE
+   ========================================================================== */
+
+.sys-container {
+    width:     100%;
+    max-width: 1200px;
+    margin:    0 auto;
+    padding:   0 4vw;
+}
+
+.sys-container--narrow {
+    max-width: 720px;
+}
+
+/* ==========================================================================
+   [06] COMPONENTI — PULSANTI
+   CTA Hierarchy: Primary (trigger attivo) / Secondary (azione neutra)
+   Geometria spigolosa. Nessuna ombra. Transizione meccanica.
+   ========================================================================== */
+
+.cta {
+    display:        inline-flex;
+    justify-content: center;
+    align-items:    center;
+    text-align:     center;
+    cursor:         pointer;
+    font-family:    var(--font-ui);
+    font-weight:    600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    outline:        none;
+    white-space:    nowrap;
+    user-select:    none;
+    -webkit-user-select: none;
+
+    /* — Smooth Glass Objects — */
+    border-radius:   var(--radius-md);
+    border:          var(--sys-border-light);
+    box-shadow:      0 10px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    
+    /* — Transizioni Cinetica — */
+    transition: transform var(--anim-snap),
+                box-shadow var(--anim-snap),
+                background-color var(--anim-snap),
+                color var(--anim-snap);
+}
+
+.cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.cta:active {
+    transform: scale(0.97);
+}
+
+/* CTA Primaria — Smeraldo Trasparente piatto (NO GLARE) */
+.cta-primary {
+    padding:          1.15rem 2.5rem;
+    font-size:        0.8125rem;  /* 13px */
+    background-color: rgba(157, 185, 126, 0.2); /* Vetro verde salvia/organico desaturato */
+    color:            var(--text-primary);
+    width:            100%;
+    max-width:        380px;
+    position:         relative;
+    overflow:         hidden;
+}
+
+.cta-primary:hover {
+    background-color:        rgba(157, 185, 126, 0.6) !important; /* Feedback vibrante */
+    backdrop-filter:         blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    color:                   var(--text-primary);
+    transition:              all 0.2s ease; /* Transizione reattiva e frenata */
+}
+
+/* Glasswipe */
+.cta-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    transition: none;
+}
+
+.cta-primary:hover::after {
+    animation: glasswipe 0.6s ease-out;
+}
+
+@keyframes glasswipe {
+    0% { left: -100%; }
+    100% { left: 200%; }
+}
+
+/* CTA Secondaria — Outline neutro */
+.cta-secondary {
+    padding:      0.6rem 1.5rem;
+    font-size:    0.6875rem;  /* 11px */
+    font-weight:  500;
+    background-color: rgba(255, 255, 255, 0.03); /* Vetro neutro */
+    color:        var(--text-primary);
+    width:        100%;
+    max-width:    228px;
+}
+
+.cta-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    border:           var(--sys-border-light) !important;
+}
+
+/* ==========================================================================
+   [07] COMPONENTE — ACCESS BAR PENINSULA
+   Penisola flottante Apple Glassmorphism — centrata, pill, glass material.
+   Fase 1 CORE_UX — token-driven, nessun solido residuo.
+   ========================================================================== */
+
+.sys-access-bar {
+    /* — Layout Penisola — */
+    position:   fixed;
+    top:        15px;
+    left:       50%;
+    transform:  translateX(-50%);
+    width:      95%;
+    max-width:  1400px;
+    height:     var(--access-bar-height); /* 48px nominale */
+    z-index:    var(--z-access-bar);
+
+    /* — Flex interno — */
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    padding:         0 1.75rem;
+
+    /* — Geometria Pill — */
+    border-radius: 50px;
+
+    /* — Materiale Glass — */
+    background:              var(--sys-glass-bg);
+    backdrop-filter:         var(--sys-glass-blur);
+    -webkit-backdrop-filter: var(--sys-glass-blur);
+    border:                  var(--sys-border-light);
+    box-shadow:              var(--shadow-lg),
+                             inset 0 1px 0 rgba(255, 255, 255, 0.06); /* luce interna superiore */
+
+    /* — Transition — */
+    transition: box-shadow var(--anim-smooth), background var(--anim-smooth);
+}
+
+/* — Logo — */
+.sys-access-bar__logo-link {
+    display:     inline-flex;
+    align-items: center;
+    line-height: 0;
+    flex-shrink: 0;
+}
+
+.sys-access-bar__logo {
+    height:  16px; /* leggermente ridotto per la penisola compatta */
+    width:   auto;
+    display: block;
+    fill:    rgba(255, 255, 255, 0.70); /* smorzato — integrazione glass */
+    transition: fill var(--anim-snap);
+}
+
+.sys-access-bar__logo-link:hover .sys-access-bar__logo {
+    fill: rgba(255, 255, 255, 0.92);
+}
+
+/* — Status block — */
+.sys-access-bar__status {
+    display:        flex;
+    flex-direction: column;
+    align-items:    flex-start;
+    gap:            2px;
+    margin-left:    1.25rem;
+    flex:           1;
+}
+
+.sys-access-bar__label {
+    font-family:    var(--font-mono);
+    font-size:      0.5rem;   /* 8px — micro label */
+    font-weight:    500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color:          var(--text-muted); /* Ghost tier — integra con glass layer */
+    line-height:    1;
+}
+
+.sys-access-bar__status-row {
+    display:     flex;
+    align-items: center;
+    gap:         0.4rem;
+}
+
+/* Indicatore di stato — pallino */
+.sys-access-bar__dot {
+    width:         7px;
+    height:        7px;
+    border-radius: 50%;
+    flex-shrink:   0;
+    background-color: rgba(255, 255, 255, 0.35); /* Neutro rgba — UNDER REVIEW */
+    box-shadow:    0 0 0 0 transparent; /* base per glow animato */
+    transition:    background-color var(--transition-mechanical),
+                   box-shadow var(--transition-mechanical);
+}
+
+/* Varianti di stato — gestite via JS con data-status sul bar element */
+.sys-access-bar[data-status="request"] .sys-access-bar__dot {
+    background-color: #CB8010;
+    box-shadow: 0 0 6px 1px rgba(203, 128, 16, 0.55);
+}
+
+.sys-access-bar[data-status="verified"] .sys-access-bar__dot {
+    background-color: #9A8A3F;
+    box-shadow: 0 0 6px 1px rgba(154, 138, 63, 0.55);
+}
+
+.sys-access-bar[data-status="denied"] .sys-access-bar__dot {
+    background-color: #8B4A4A;
+    box-shadow: 0 0 6px 1px rgba(139, 74, 74, 0.55);
+}
+
+.sys-access-bar[data-status="allowed"] .sys-access-bar__dot {
+    background-color: var(--sys-trigger-active);
+    box-shadow: 0 0 8px 2px rgba(157, 185, 126, 0.50);
+}
+
+.sys-access-bar__status-text {
+    font-family:    var(--font-mono);
+    font-size:      0.6875rem; /* 11px */
+    font-weight:    400; /* smorzato — non dominante */
+    text-transform: lowercase; /* Apple-style — minuscolo */
+    letter-spacing: 0.02em;
+    color:          rgba(255, 255, 255, 0.70);
+    line-height:    1;
+}
+
+/* Dot animation — lampeggio asincrono */
+.sys-access-bar__status-text .dot {
+    display:       inline-block;
+    animation:     sys-blink 1.4s infinite both;
+}
+
+.sys-access-bar__status-text .dot:nth-child(1) { animation-delay: 0.0s; }
+.sys-access-bar__status-text .dot:nth-child(2) { animation-delay: 0.2s; }
+.sys-access-bar__status-text .dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes sys-blink {
+    0%, 100% { opacity: 0; }
+    50%       { opacity: 1; }
+}
+
+/* — Slot destro — timestamp / marker di sistema (opzionale) — */
+.sys-access-bar__meta {
+    display:        flex;
+    align-items:    center;
+    gap:            0.75rem;
+    flex-shrink:    0;
+}
+
+.sys-access-bar__meta-item {
+    font-family:    var(--font-mono);
+    font-size:      0.5625rem; /* 9px */
+    font-weight:    400;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color:          var(--text-muted); /* Ghost tier — timestamp, marker */
+    line-height:    1;
+}
+
+/* Separatore verticale tra meta items */
+.sys-access-bar__meta-item + .sys-access-bar__meta-item::before {
+    content:      '|';
+    margin-right: 0.75rem;
+    opacity:      0.3;
+}
+
+/* ==========================================================================
+   [08] COMPONENTE — GLASS-DIFFUSE
+   Vetro tecnico satinato. Nessun glow. Nessuna ombra diffusa.
+   ========================================================================== */
+
+.glass-diffuse {
+    background:              var(--sys-glass-bg);
+    backdrop-filter:         var(--sys-glass-blur);
+    -webkit-backdrop-filter: var(--sys-glass-blur);
+    border:                  var(--sys-border-light);
+}
+
+/* ==========================================================================
+   [09] UTILITY
+   ========================================================================== */
+
+.visually-hidden {
+    position:   absolute;
+    width:      1px;
+    height:     1px;
+    margin:     -1px;
+    padding:    0;
+    overflow:   hidden;
+    clip:       rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border:     0;
+}
+
+.no-select {
+    user-select:         none;
+    -webkit-user-select: none;
+}
+
+/* ==========================================================================
+   [10] RESPONSIVE — BREAKPOINTS
+   ========================================================================== */
+
+@media (max-width: 992px) {
+    :root {
+        --access-bar-height: 44px;
+    }
+
+    .sys-access-bar {
+        width: 96%;
+    }
+}
+
+@media (max-width: 576px) {
+    :root {
+        --access-bar-height: 44px;
+    }
+
+    .sys-access-bar {
+        top:     10px;
+        width:   calc(100% - 24px);
+        padding: 0 1rem;
+        border-radius: 32px; /* pill leggermente ridotto su mobile */
+    }
+
+    /* Nasconde meta items su schermi molto piccoli */
+    .sys-access-bar__meta {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   [NEW] PUNISHMENT PROTOCOL: DENIED RED CROSS
+   ========================================================================== */
+.sys-access-bar[data-status="denied"] .sys-access-bar__dot {
+    background-color: transparent !important;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sys-access-bar[data-status="denied"] .sys-access-bar__dot::before,
+.sys-access-bar[data-status="denied"] .sys-access-bar__dot::after {
+    content: '';
+    position: absolute;
+    width: 80%; /* Si adatta alla grandezza nativa del dot */
+    height: 2px;
+    background-color: #ff3333; /* Rosso puro per il denied */
+    transform-origin: center;
+}
+
+.sys-access-bar[data-status="denied"] .sys-access-bar__dot::before {
+    transform: rotate(45deg);
+}
+
+.sys-access-bar[data-status="denied"] .sys-access-bar__dot::after {
+    transform: rotate(-45deg);
+}

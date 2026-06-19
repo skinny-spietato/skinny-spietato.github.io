@@ -1,0 +1,18 @@
+# Local heavy media folders (uploaded to Cloudinary)
+IMMAGINI/
+VIDEO/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Credentials & Environment files
+.env
+*.log
+node_modules/
+dist/
+build/
+
+# Backend and Scripts
+APPSCRIPT/
+*.gs

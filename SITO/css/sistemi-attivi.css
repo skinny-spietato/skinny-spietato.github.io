@@ -1,0 +1,553 @@
+/* ==========================================================================
+   SITOSS NODEBETAV1.0.0 — SISTEMI ATTIVI — CSS SPECIFICO v2.0
+   Layout: scroll orizzontale a snap tra case study,
+           scroll verticale interno a ogni slide.
+   Palette e tipografia: ESCLUSIVAMENTE da main.css design tokens.
+   ========================================================================== */
+
+/* ── [01] SLIDER CONTAINER ─────────────────────────────────────────────── */
+
+.sys-slider-container {
+    display:          flex;
+    width:            100vw;
+    height:           100vh;
+    overflow-x:       auto;
+    overflow-y:       hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior:  auto;
+    -ms-overflow-style: none;
+    scrollbar-width:    none;
+}
+
+.sys-slider-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* ── [02] SLIDE SINGOLO CASO STUDIO ────────────────────────────────────── */
+
+.sys-case-study-slide {
+    flex:              0 0 100vw;
+    width:             100vw;
+    height:            100vh;
+    scroll-snap-align: start;
+    overflow-y:        auto;
+    overflow-x:        hidden;
+    position:          relative;
+    /* CLEARANCE MAGGIORATO: Spinge giù i titoli rispetto al vetro della Access Bar */
+    padding-top:       calc(var(--access-bar-height) + 110px) !important;
+    padding-bottom:    var(--space-lg);
+    background-color:  var(--sys-bg-primary);
+    
+    /* TRUE SPATIAL OVERLAY: Nasconde il testo solo nel gap di 15px sopra l'Access Bar */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0px, transparent 15px, black 15px, black 100%) !important;
+    mask-image: linear-gradient(to bottom, transparent 0px, transparent 15px, black 15px, black 100%) !important;
+    
+    -ms-overflow-style: none;
+    scrollbar-width:    none;
+}
+
+.sys-case-study-slide::-webkit-scrollbar {
+    display: none;
+}
+
+.case-study-content {
+    max-width: 1200px;
+    margin:    0 auto;
+    padding:   0 4vw;
+}
+
+/* ── [03] TIPOGRAFIA — BLOCK TESTO ─────────────────────────────────────── */
+
+.sys-text-block {
+    max-width:   600px;
+    margin:      var(--space-lg) auto;
+    text-align:  center;
+    color:       rgba(255, 255, 255, 0.5); /* Ghost Sync */
+    font-family: var(--font-ui);
+    font-size:   0.8rem;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.sys-text-block p {
+    margin-bottom: var(--space-md);
+}
+
+.sys-text-block p:last-child {
+    margin-bottom: 0;
+}
+
+.project-title {
+    font-family:    var(--font-ui);
+    font-weight:    500;
+    font-size:      clamp(0.9rem, 2vw, 1.1rem);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color:          rgba(157, 185, 126, 0.6) !important; /* Total Sync Stealth/Alpha 0.6 */
+    border:         none;
+    margin-bottom:  var(--space-md);
+    line-height:    1.2;
+}
+
+.project-title a {
+    color:           inherit;
+    text-decoration: none;
+    transition:      opacity var(--transition-fast);
+}
+
+.project-title a:hover {
+    opacity: 0.72;
+}
+
+.sys-kw-link {
+    color:                   var(--sys-text-primary);
+    text-decoration:         underline;
+    text-underline-offset:   2px;
+    text-decoration-color:   var(--sys-bg-secondary);
+    transition:              color var(--transition-fast);
+}
+
+.sys-kw-link:hover {
+    color: rgba(157, 185, 126, 0.6) !important; /* Total Sync Stealth/Alpha 0.6 */
+}
+
+/* ── [04] CAROUSEL CONTAINER — max 720px centrato ──────────────────────── */
+
+.sys-horizontal-carousel {
+    max-width:  720px;
+    margin:     var(--space-lg) auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    
+    /* Spatial Edge Masking — Fade ai bordi */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 150px, black calc(100% - 150px), transparent);
+    mask-image:         linear-gradient(to right, transparent, black 150px, black calc(100% - 150px), transparent);
+
+    -ms-overflow-style: none;
+    scrollbar-width:    none;
+}
+
+.sys-horizontal-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+/* ── [05] CAROUSEL TRACK — altezza fissa, larghezza adattiva ───────────── */
+
+.carousel-track {
+    display:        flex;
+    flex-direction: row;
+    align-items:    stretch;
+    gap:            var(--space-sm);
+    height:         280px;       /* altezza fissa — le img dettano la larghezza */
+    width:          max-content;
+    min-width:      100%;
+}
+
+/* ── [06] CAROUSEL ITEM — height 100%, width auto, no cropping ─────────── */
+
+.carousel-item {
+    height:           100%;
+    width:            auto;
+    flex-shrink:      0;
+    border-radius:    var(--radius-md); /* Physical Screen Radius */
+    overflow:         hidden;
+    background:       transparent;
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    position:         relative;
+}
+
+/* Override: le classi .grid-item non aggiungono vincoli di altezza propria */
+.grid-item {
+    height: 100%;
+}
+
+/* OVERRIDE CRITICO — annulla larghezze forzate span-*
+   La larghezza è dettata esclusivamente dall'immagine interna. */
+.span-12,
+.span-8,
+.span-6,
+.span-5,
+.span-4,
+.span-3 {
+    width:     auto !important;
+    min-width: 0   !important;
+}
+
+/* Media: height 100%, width auto → rispetta l'aspect ratio nativo */
+.carousel-item img {
+    height:        100%;
+    width:         auto;
+    object-fit:    contain;
+    display:       block;
+    border-radius: var(--radius-md);
+}
+
+/* ── [07] VIDEO ITEM — 16:9 landscape (Black Sheep LED walls) ──────────── */
+
+.video-item {
+    height:        100%;
+    aspect-ratio:  1452 / 384;
+    width:         auto;
+    border-radius: var(--radius-md); /* Physical Screen Radius */
+    overflow:      hidden;
+    flex-shrink:   0;
+}
+
+.video-item video {
+    width:         100%;
+    height:        100%;
+    object-fit:    cover;
+    border-radius: var(--radius-md);
+    display:       block;
+}
+
+/* Scalatura -20% esclusivamente per il carosello video panoramico */
+.sys-video-carousel .carousel-track {
+    height: 224px; /* Ridotto del 20% rispetto ai 280px standard */
+}
+
+/* ── [08] PORTRAIT VIDEO PAIR — 9:16 (Aeezus Ankh) ────────────────────── */
+
+.sys-portrait-video-pair {
+    max-width:       720px;
+    margin:          var(--space-lg) auto;
+    display:         flex;
+    justify-content: center;
+    align-items:     center;
+    gap:             var(--space-sm);
+    padding:         var(--space-lg) 0;
+}
+
+.portrait-video-item {
+    height:        280px;
+    aspect-ratio:  9 / 16;
+    width:         auto;
+    border-radius: var(--radius-md); /* Physical Screen Radius */
+    overflow:      hidden;
+    flex-shrink:   0;
+}
+
+.portrait-video-item video {
+    width:         100%;
+    height:        100%;
+    object-fit:    cover;
+    border-radius: var(--radius-md);
+    display:       block;
+}
+
+/* ── [09] FATAL BLOOM — carousel pagine A3 landscape (INTOCCABILE) ──────── */
+
+.sys-fatal-bloom-carousel {
+    max-width:  720px;
+    margin:     var(--space-lg) auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height:     320px;
+    -ms-overflow-style: none;
+    scrollbar-width:    none;
+}
+
+.sys-fatal-bloom-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.sys-fatal-bloom-carousel .carousel-track {
+    height:     100%;
+    min-width:  100%;
+    width:      max-content;
+    align-items: stretch;
+}
+
+.sys-fatal-bloom-carousel .carousel-item {
+    height:      100%;
+    width:       auto;
+    flex-shrink: 0;
+    background:  transparent;
+}
+
+.sys-fatal-bloom-carousel .carousel-item img {
+    height:        100%;
+    width:         auto;
+    max-width:     none;
+    object-fit:    contain;
+    border-radius: var(--radius-soft);
+    display:       block;
+}
+
+/* ── [10] CTA BLOCK ─────────────────────────────────────────────────────── */
+
+.sys-cta-block {
+    margin-top:    calc(var(--space-lg) * 2);
+    margin-bottom: var(--space-lg);
+}
+
+.cta-case-study {
+    max-width:               220px;
+    padding:                 0.575rem 1.25rem;
+    font-size:               0.6375rem;
+
+    /* Sinkronizzazione Vetro Home (Alpha Elevato) */
+    background:              rgba(157, 185, 126, 0.2) !important;
+    backdrop-filter:         blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border:                  var(--sys-border-light);
+    box-shadow:              0 10px 30px rgba(0, 0, 0, 0.4);
+    color:                   #ffffff !important;
+    transition:              background 0.3s ease, filter 0.3s ease, transform 0.2s ease;
+}
+
+.cta-case-study:hover {
+    background: rgba(157, 185, 126, 0.6) !important;
+}
+
+.sys-preventive-eval-text {
+    margin-top:     calc(var(--space-lg) * 0.75);
+    font-family:    var(--font-mono);
+    font-size:      0.625rem;
+    color:          var(--sys-bg-secondary);
+    line-height:    1.5;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight:    400;
+}
+
+/* ── [11] FADE-OUT + SPACER ─────────────────────────────────────────────── */
+
+.case-study-fade-out {
+    width:          100%;
+    height:         120px;
+    pointer-events: none;
+    background:     linear-gradient(
+        to bottom,
+        transparent 0%,
+        #191919 100% /* Void Sync Access Bar */
+    );
+    margin-top: calc(var(--space-lg) * 0.5);
+}
+
+.case-study-footer-spacer {
+    height: 80px;
+}
+
+/* ── [12] RESPONSIVE ────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+    .sys-case-study-slide {
+        padding-top: calc(var(--access-bar-height) + var(--space-md));
+    }
+
+    .project-title {
+        font-size: clamp(0.855rem, 1.9vw, 1.045rem); /* Riduzione algoritmica del 5% */
+    }
+
+    .sys-text-block {
+        font-size: 0.55rem; /* Ulteriore compressione estrema */
+        line-height: 1.4;
+    }
+
+    /* Masking più ridotto su mobile */
+    .sys-horizontal-carousel {
+        -webkit-mask-image: linear-gradient(to right, transparent, black 60px, black calc(100% - 60px), transparent);
+        mask-image:         linear-gradient(to right, transparent, black 60px, black calc(100% - 60px), transparent);
+    }
+
+    /* Track altezza ridotta su mobile — width:auto invariato */
+    .carousel-track {
+        height: 220px;
+    }
+
+    .video-item {
+        height: 220px;
+    }
+
+    .sys-video-carousel .carousel-track {
+        height: 176px;
+    }
+
+    .portrait-video-item {
+        height: 220px;
+    }
+
+    .sys-fatal-bloom-carousel {
+        height: 220px;
+    }
+
+    /* ALL SYSTEMS MATRIX: Miniaturizzazione nodi estrema per HUD cellulare */
+    .sys-snake-matrix {
+        grid-template-columns: repeat(14, 22px) !important; /* Compressione spinta della traccia (-30%) */
+        gap: 2px !important; /* Spazio interstiziale minimo */
+        padding: 6px !important;
+    }
+
+    .sys-grid-cell {
+        width: 22px !important; /* Area immagine microscopicamente ridotta (-30%) */
+        height: 22px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-track {
+        height: 180px;
+    }
+
+    .video-item {
+        height: 180px;
+    }
+
+    .sys-video-carousel .carousel-track {
+        height: 144px;
+    }
+
+    .portrait-video-item {
+        height: 200px;
+    }
+
+    .sys-fatal-bloom-carousel {
+        height: 180px;
+    }
+
+    .sys-text-block {
+        font-size: 0.5rem; /* Compressione microscopica massima */
+    }
+
+    .cta-case-study {
+        max-width: 200px;
+        font-size: 0.575rem;
+    }
+}
+
+/* ── [13] ALL SYSTEMS MATRIX (PHASE 3) ─────────────────────────────────── */
+
+.sys-overlay-glass {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(calc(100% + 100px)) !important;
+    
+    /* NUOVE REGOLE DI LARGHEZZA (-20% rispetto ai 720px) */
+    width: 85% !important;
+    max-width: 576px !important; 
+    
+    height: 40vh !important;
+    z-index: 9000;
+    overflow: hidden;
+
+    background: rgba(30, 30, 30, 0.75);
+    backdrop-filter: blur(30px) saturate(150%);
+    -webkit-backdrop-filter: blur(30px);
+    border: var(--sys-border-light);
+    border-radius: var(--radius-xl) !important;
+    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform; /* HARDWARE ACCELERATION FORCE */
+}
+
+.sys-overlay-glass.is-active {
+    transform: translateX(-50%) translateY(0) !important;
+}
+
+.sys-overlay-wrapper {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important; /* Rimuoviamo il flex column che divideva gli spazi */
+}
+
+/* ── HUD SCANNER AREA ── */
+.sys-preview-unit {
+    position: fixed !important;
+    top: 90px !important; /* Spazio sotto l'Access Bar */
+    bottom: calc(40vh + 50px) !important; /* Spazio sopra il pop-up All Systems */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 90% !important;
+    max-width: 1000px !important;
+    z-index: 8500 !important;
+    pointer-events: none !important; /* L'utente può cliccare/scrollare attraverso di essa */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sys-preview-unit.is-scanning {
+    opacity: 1;
+}
+
+.preview-media {
+    max-width: 100%;
+    max-height: 100%;
+    /* MANTIENE LE PROPORZIONI ORIGINALI SENZA TAGLIARE: */
+    object-fit: contain !important; 
+    border-radius: var(--radius-md);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8); /* Stacca l'asset dallo sfondo sfocato */
+    animation: scannerFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes scannerFadeIn {
+    from { transform: scale(0.97); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.sys-grid-viewport {
+    width: 100% !important;
+    height: 100% !important; /* Ora occupa tutto il pop-up */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    position: relative !important;
+    cursor: crosshair !important; /* Scanner Target */
+    touch-action: none !important; /* Blocca le gesture native del browser */
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+.sys-snake-matrix {
+    display: grid !important;
+    grid-template-columns: repeat(14, 48px) !important; /* Calibrato per 112 nodi */
+    gap: 6px !important;
+    padding: 20px !important;
+    width: max-content !important;
+    margin: 0 auto !important;
+    will-change: transform !important;
+}
+
+.sys-grid-cell {
+    width: 48px !important;
+    height: 48px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 4px !important;
+}
+
+.sys-grid-cell img, 
+.sys-grid-cell video {
+    position: absolute !important;
+    top: 0 !important; 
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    /* Nessun filtro per mantenere i colori originali */
+    opacity: 1 !important; 
+    pointer-events: none !important; /* CRITICO: Impedisce che il browser provi a trascinare l'immagine nativamente */
+}
+
+/* ── [14] MOBILE SURVIVAL (PHASE 6) ────────────────────────────────────── */
+@media (max-width: 576px) {
+    .sys-overlay-glass {
+        height: 25vh !important; /* Compressione strutturale rettangolare */
+        bottom: 10px !important;
+    }
+    
+    .sys-grid-viewport {
+        touch-action: none !important; /* Sicurezza addizionale contro lo scroll della pagina */
+    }
+}

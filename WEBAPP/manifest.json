@@ -1,0 +1,16 @@
+{
+  "name": "SS Command Center",
+  "short_name": "SS-ADMIN",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#111111",
+  "start_url": "./index.html",
+  "icons": [
+    {
+      "src": "logo-pwa.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

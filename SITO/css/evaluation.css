@@ -1,0 +1,772 @@
+/* ==========================================================================
+   SITOSS NODEBETAV1.0.0 — EVALUATION TERMINAL CSS
+   ========================================================================== */
+
+/* Layout Globale */
+body[data-page="evaluation"] {
+    padding-top: 0 !important;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--sys-bg-primary);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Chat Canvas */
+.sys-chat-canvas {
+    flex: 1;
+    width: 100%;
+    margin-top: 0 !important; /* Rimuove il taglio a mezz'aria */
+    overflow-y: auto;
+    position: relative;
+    
+    /* Padding-top calcolato: altezza barra + respiro. Padding-bottom: controlli */
+    padding: calc(var(--access-bar-height) + 60px) 4vw calc(var(--controller-h, 110px) + 2rem) 4vw;
+    
+    /* TRUE SPATIAL OVERLAY: Nasconde il testo solo nel gap di 15px sopra l'Access Bar */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0px, transparent 15px, black 15px, black 100%) !important;
+    mask-image: linear-gradient(to bottom, transparent 0px, transparent 15px, black 15px, black 100%) !important;
+    
+    transition: padding-bottom 0.1s ease-out;
+    display: flex;
+    flex-direction: column;
+
+    /* Nascondi scrollbar nativa */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.sys-chat-canvas::-webkit-scrollbar {
+    display: none;
+}
+
+/* Ghost State */
+.sys-ghost-state {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 680px;
+    padding: 0 4vw;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.sys-ghost-state__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.sys-ghost-state__text {
+    font-family: var(--font-mono);
+    font-size: 0.65rem; /* Dimensione ridotta come richiesto */
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+    opacity: 0.1 !important; /* Estrema calibrazione Stealth */
+}
+
+.sys-ghost-state__title {
+    font-family: var(--font-mono);
+    opacity: 0.7;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: 0;
+    margin-bottom: 0.25rem;
+    display: block; /* Forza il titolo su una nuova linea per una centratura perfetta */
+}
+
+/* Input Area */
+.sys-chat-controller {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1.5rem 4vw 2rem 4vw;
+    z-index: var(--z-panel);
+    background: linear-gradient(to bottom, transparent 0%, var(--sys-bg-primary) 30%, var(--sys-bg-primary) 100%);
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.sys-chat-input-wrapper {
+    width: 100%;
+    max-width: 800px;
+    padding: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+    pointer-events: auto;
+    
+    /* NUOVO MATERIALE: Vetro Antracite */
+    background-color: rgba(25, 25, 25, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.sys-chat-input {
+    flex: 1;
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-primary) !important; /* Active Typing Sync (Bianco Puro) */
+    font-family: var(--font-mono);
+    font-size: var(--font-base-size);
+    padding: 0.35rem 0.75rem;
+    margin-bottom: 0.15rem;
+    resize: none;
+    outline: none;
+    height: 36px;
+    line-height: 1.5;
+    transition: color var(--transition-fast);
+}
+
+.sys-chat-input::placeholder {
+    color: rgba(157, 185, 126, 0.4);
+    opacity: 1;
+}
+
+.sys-chat-input:focus {
+    color: var(--text-primary) !important; /* Mantenimento visibilità in digitazione */
+}
+
+.sys-chat-send {
+    width: 32px;
+    height: 32px;
+    background-color:        rgba(157, 185, 126, 0.2) !important;
+    backdrop-filter:         blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border:                  var(--sys-border-light);
+    border-radius:           50%;
+    color:                   var(--text-primary);
+    display:                 flex;
+    justify-content:         center;
+    align-items:             center;
+    cursor:                  pointer;
+    transition:              all 0.2s ease;
+    flex-shrink:             0;
+}
+
+.sys-chat-send svg {
+    width: 16px;
+    height: 16px;
+}
+
+.sys-chat-send:hover,
+.sys-chat-send:active {
+    background-color:        rgba(157, 185, 126, 0.6) !important;
+    backdrop-filter:         blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    color:                   var(--text-primary);
+}
+
+/* Scheletro Messaggi (UI Chat) */
+.chat-row {
+    display: flex;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto 2rem auto;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.chat-row--bot {
+    justify-content: flex-start;
+}
+
+.chat-row--user {
+    justify-content: flex-end;
+}
+
+.sys-bot-avatar {
+    width: 32px;
+    height: auto;
+    background-color: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-zero);
+    flex-shrink: 0;
+}
+
+.sys-bot-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.38);
+    text-align: center;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+}
+
+.sys-bot-avatar svg {
+    width: 24px;
+    height: auto;
+    fill: var(--text-primary);
+}
+
+.chat-bubble {
+    font-family: var(--font-ui);
+    padding: 1rem 1.25rem;
+    border-radius: 4px;
+    max-width: 80%;
+    line-height: 1.5;
+    font-size: 0.9375rem;
+    white-space: pre-wrap;
+}
+
+.chat-row--bot .chat-bubble {
+    /* Materiale e Colore Antracite (Alpha fisso 0.6) */
+    background-color: rgba(25, 25, 25, 0.6) !important; 
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    
+    /* Bordo Luce molto sottile per staccarlo dal fondo */
+    border: 1px solid rgba(255, 255, 255, 0.08) !important; 
+    
+    /* Tipografia e Leggibilità */
+    color: var(--text-primary) !important; 
+    font-weight: 400;
+    
+    /* Geometria Apple (Coda ancorata all'Avatar in alto a SINISTRA) */
+    border-radius: 4px 24px 24px 24px !important;
+}
+
+.chat-row--user .chat-bubble {
+    /* Materiale e Colore (Alpha fisso 0.6) */
+    background-color: rgba(157, 185, 126, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    
+    /* Bordo Luce (Glassmorphism) */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Forza il bordo luce nel caso la variabile manchi */
+    
+    /* Tipografia e Leggibilità */
+    color: var(--text-primary) !important; /* Forza il testo al bianco ottico (sovrascrive il bg-primary scuro precedente) */
+    font-weight: 400;
+    
+    /* Geometria Apple (Coda in basso a destra) */
+    border-radius: 18px 18px 4px 18px !important;
+}
+
+/* ==========================================================================
+   [NEW] SMART REPLIES — In-Bubble Component (DOC-16)
+   ========================================================================== */
+
+/* Container delle pillole — iniettato dentro .chat-bubble del bot */
+.sys-smart-replies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Pillola singola */
+.sys-smart-reply {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+/* Hover attivo */
+.sys-smart-reply:hover:not(:disabled):not(.sys-smart-reply--used) {
+    /* Materiale e Colore - Alpha a 0.6, ma isolato dal fondo */
+    background-color: rgba(157, 185, 126, 0.6) !important;
+    
+    /* Forza il reset del blur per evitare blending anomali col vetro sottostante */
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    
+    /* Bordo luce identico alla bolla utente */
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    
+    /* Tipografia sparata al bianco ottico come la bolla */
+    color: #ffffff !important;
+    font-weight: 500 !important; /* Leggero boost per pareggiare la leggibilità */
+    
+    /* Ombra di stacco per non fonderlo con la bolla antracite del bot */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+    transform: translateY(-1px); /* Micro-feedback fisico */
+}
+
+/* Focus accessibilità */
+.sys-smart-reply:focus-visible {
+    outline: 1px solid var(--sys-trigger-active);
+    outline-offset: 2px;
+}
+
+/* Stato usato / disabilitato */
+.sys-smart-reply:disabled,
+.sys-smart-reply--used {
+    cursor: not-allowed;
+}
+
+/* Selezione attiva (UI_RECOVERY_PROTOCOL) */
+.sys-smart-reply.active-selection {
+    background-color: rgba(157, 185, 126, 0.75) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ==========================================================================
+   [NEW] UPLOAD BUTTON — Hardware Lock Component (DOC-16, DOC-17 §Step7)
+   ========================================================================== */
+
+.sys-chat-upload-btn {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sys-chat-upload-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    flex-shrink: 0;
+}
+
+.sys-chat-upload-btn:hover,
+.sys-chat-upload-btn:active {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: var(--text-primary);
+}
+
+/* ==========================================================================
+   [NEW] BAN OVERLAY — Banishment Protocol (DOC-15 §6, DOC-17 §Step8)
+   ========================================================================== */
+
+/* L'overlay è costruito inline-style via JS (per autonomia); questo blocco
+   agisce da fallback e override per le media query responsive.            */
+#sys-ban-overlay {
+    font-family: var(--font-mono);
+}
+
+/* Timer countdown — enfatizza il numero */
+#ban-countdown {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 700;
+    color: #ff3333;
+    letter-spacing: 0.1em;
+    animation: ban-pulse 1s ease-in-out infinite;
+}
+
+@keyframes ban-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+}
+
+/* Testo motivazione ban */
+#ban-reason-text {
+    font-size: clamp(0.7rem, 2vw, 0.9rem);
+    color: rgba(255, 60, 60, 0.75);
+    max-width: 600px;
+    line-height: 1.7;
+    letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* 
+==========================================================================
+   [NEW] START CTA HIGHLIGHT (DOC-18)
+========================================================================== */
+/* Quando il wrapper ha l'intento di start, il testo diventa verde */
+.sys-intent-start .sys-chat-input {
+    color: rgba(157, 185, 126, 0.6) !important;
+}
+/* Quando il wrapper ha l'intento di start, il bottone in stato "standby" a 0.6 alpha */
+.sys-intent-start .sys-chat-send {
+    background-color: rgba(157, 185, 126, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: var(--sys-border-light) !important;
+    color: var(--text-primary) !important; /* Riporta la freccia al bianco ottico invece che scura */
+}
+/* Mantenere una transizione fluida in caso di cancellazione/alterazione del testo */
+.sys-chat-input, .sys-chat-send {
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* 
+==========================================================================
+   [NEW] MULTIMEDIA STAGING & GALLERY (DOC-19)
+========================================================================== */
+.sys-file-staging {
+    width: 100%;
+    display: none; /* Attivato via JS (flex) */
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 4px;
+}
+.sys-thumb-container {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.sys-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+.sys-thumb-doc {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+.sys-thumb-remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 16px;
+    height: 16px;
+    background: #ff4444;
+    color: white;
+    border-radius: 50%;
+    border: none;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+/* Galleria dentro la Bubble Utente */
+.sys-bubble-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.sys-bubble-gallery img {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    opacity: 0.9;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+}
+.sys-bubble-gallery img:hover {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+.sys-bubble-gallery .sys-bubble-doc {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    font-family: var(--font-mono);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    opacity: 0.9;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, background 0.3s ease;
+}
+.sys-bubble-gallery .sys-bubble-doc:hover {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ==========================================================================
+   [NEW] TERMINAL MODAL FINAL V3 (DOC-SS-FINAL-MODAL-V3)
+   ========================================================================== */
+
+.sys-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.sys-final-modal {
+    width: 90%;
+    max-width: 450px;
+    padding: 2.5rem;
+    text-align: center;
+    color: #ffffff;
+    font-family: monospace;
+    
+    /* CLONE ACCESS BAR MATERIAL */
+    background: rgba(25, 25, 25, 0.65) !important;
+    backdrop-filter: blur(20px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+@keyframes sysModalSnap {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes sysIconSmooth {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.sys-modal-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 1.5rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    opacity: 0;
+    animation: sysIconSmooth 0.4s ease-out 0.2s forwards;
+}
+
+.sys-modal-icon--granted {
+    /* Verde Salvia Bubble Chat a 0.6 */
+    border: 2px solid rgba(157, 185, 126, 0.6) !important;
+    color: rgba(157, 185, 126, 0.6) !important;
+    box-shadow: 0 0 15px rgba(157, 185, 126, 0.15) !important;
+}
+
+.sys-modal-icon--denied {
+    /* Rosso Alert corrispondente a 0.6 */
+    border: 2px solid rgba(255, 51, 51, 0.6) !important;
+    color: rgba(255, 51, 51, 0.6) !important;
+    box-shadow: 0 0 15px rgba(255, 51, 51, 0.15) !important;
+}
+
+/* ==========================================================================
+   [NEW] SKINNY ORACLE PURE GLASS MATERIAL (OPERATING METHOD CLONE)
+   ========================================================================== */
+#sys-oracle-sidebar {
+    /* Operating Method Material Sync */
+    background: rgba(30, 30, 30, 0.75);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    
+    /* Apple Island Geometries & Variables (from main.css) */
+    border: var(--sys-border-light);
+    border-radius: var(--radius-xl);
+    
+    /* Ombra profonda + luce di bordo interna (True Glass Overlay) */
+    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ==========================================================================
+   [NEW] MODAL TYPOGRAPHY — Text Secondary Token Sync
+   ========================================================================== */
+.sys-modal-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+/* ==========================================================================
+   [NEW] PRIVACY POLICY MODAL
+   ========================================================================== */
+.sys-privacy-panel {
+    background: var(--sys-glass-bg) !important;
+    backdrop-filter: var(--sys-glass-blur) !important;
+    -webkit-backdrop-filter: var(--sys-glass-blur) !important;
+    border: var(--sys-border-light) !important;
+    border-radius: 24px !important;
+    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    padding: 1.5rem;
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: var(--text-primary);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.sys-privacy-content {
+    font-size: 0.7rem;
+    line-height: 1.5;
+    flex: 1;
+    overflow-y: auto;
+    /* Hide scrollbar */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.sys-privacy-content::-webkit-scrollbar {
+    display: none;
+}
+
+.sys-privacy-content p {
+    margin-bottom: 0.75rem;
+}
+
+/* ==========================================================================
+   [15] MOBILE RESPONSIVE TWEAKS (PHASE 7)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .sys-ghost-state__item {
+        align-items: center;
+        text-align: center; /* Centratura assoluta del blocco testo fantasma */
+    }
+
+    .sys-ghost-state__text {
+        font-size: 0.65rem; /* Compressione tipografica leggera (rispetto al clamp base) */
+        line-height: 1.5;
+    }
+    
+    .sys-ghost-state__title {
+        display: block; /* Isolamento per centratura ottimale */
+        margin-right: 0;
+        margin-bottom: 0.25rem;
+    }
+
+    /* Privacy Modal Mobile Tweaks */
+    .sys-privacy-panel {
+        padding: 1.25rem !important;
+        border-radius: 18px !important;
+        max-height: 55vh !important; /* Limitazione verticale estrema per viewport ristretti */
+    }
+    
+    .sys-privacy-content {
+        font-size: 0.6rem;
+        line-height: 1.4;
+    }
+    
+    .sys-privacy-content p {
+        margin-bottom: 0.6rem;
+    }
+
+    /* =========================================================
+       CHAT & AVATAR MINIATURIZATION
+       ========================================================= */
+    .sys-bot-avatar { width: 24px; }
+    .sys-bot-avatar svg { width: 18px; }
+    .sys-bot-label { font-size: 0.45rem; }
+
+    .chat-bubble {
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem; /* Compressione tipografica bolle utente e bot */
+        line-height: 1.4;
+        max-width: 80%; /* Riduzione geometrica per prevenire collisioni */
+    }
+    
+    .chat-row--bot .chat-bubble {
+        margin-right: 1rem; /* Barriera spaziale assoluta sul lato destro */
+    }
+
+    /* SMART REPLIES (BOTTONI) */
+    .sys-smart-replies {
+        justify-content: center; /* Centratura assoluta dell'array di trigger */
+    }
+    .sys-smart-reply {
+        padding: 4px 6px; /* Compattazione per forzare 3 nodi per linea */
+        font-size: 0.5rem;
+    }
+    select.sys-smart-reply {
+        max-width: 48%; /* Restrizione volumetrica per garantire coesistenza lineare */
+        flex: 1 1 auto;
+        padding: 4px 2px;
+    }
+
+    /* =========================================================
+       FINAL MODAL (ACCESS ALLOW/DENY) COMPRESSION
+       ========================================================= */
+    .sys-final-modal {
+        width: 85% !important; /* Forza margini laterali asimmetrici o simmetrici lontani dai bordi */
+        max-width: 300px !important; /* Restrizione volumetrica rigida */
+        padding: 1.5rem !important;
+        border-radius: 18px !important;
+    }
+
+    .sys-modal-desc {
+        font-size: 0.75rem;
+        margin-bottom: 1.25rem;
+        line-height: 1.4;
+    }
+
+    .sys-modal-icon {
+        width: 32px;
+        height: 32px;
+        margin-bottom: 1rem;
+    }
+
+    /* =========================================================
+       MAP BUBBLE COMPRESSION
+       ========================================================= */
+    .sys-map-bubble {
+        min-width: 180px !important; /* Compressione spaziale asse X */
+        height: 150px !important; /* Compressione spaziale asse Y */
+    }
+}

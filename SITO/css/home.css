@@ -1,0 +1,653 @@
+/* ==========================================================================
+   SITOSS NODEBETAV1.0.0 — HOME MODULE v2.6
+   Matematica dei 60vh risolta — clipping eliminato.
+   ========================================================================== */
+
+/* ==========================================================================
+   [01] BODY
+   ========================================================================== */
+
+body[data-page="home"] {
+    overflow: hidden;
+    height:   100vh;
+    width:    100vw;
+}
+
+/* ==========================================================================
+   [02] MAIN — Dichiarazione centrale
+   ========================================================================== */
+
+.sys-main {
+    min-height:      calc(100vh - var(--access-bar-height));
+    /* Aumentato il top-padding da 5rem a 8rem (o 9rem se serve) per spingere in basso il blocco */
+    padding:         8rem 4vw 3rem; 
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
+    justify-content: center;
+    gap:             0;
+}
+
+.sys-declaration {
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
+    text-align:      center;
+    gap:             2rem;
+    max-width:       900px;
+    margin:          0 auto;
+}
+
+.sys-declaration__title {
+    font-family:    var(--font-ui);
+    font-size:      clamp(2.25rem, 5vw, 3.75rem);
+    font-weight:    600;
+    letter-spacing: -0.05em;
+    line-height:    1.05;
+    color:          var(--text-primary);
+}
+
+.sys-declaration__title-sub {
+    display:     block;
+    font-weight: 600;
+    color:       var(--text-primary);
+}
+
+.sys-declaration__body {
+    font-family:    var(--font-mono);
+    font-size:      clamp(0.8125rem, 1.1vw, 0.9375rem);
+    font-weight:    400;
+    color:          var(--text-secondary);
+    line-height:    1.6;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+    opacity:        0.5;
+    max-width:      750px;
+    margin:         0 auto;
+}
+
+.sys-declaration__actions {
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
+    justify-content: center;
+    gap:             0.5rem; /* Gap ridotto per avvicinare bottone e carosello */
+    margin-top:      0.75rem; /* Margine dimezzato per avvicinare il blocco testo superiore */
+    width:           100%;
+}
+
+/* ==========================================
+   ACTIVE SYSTEMS PREVIEW DECK [PHASE 2]
+   ========================================== */
+
+.sys-preview-deck-wrapper {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto -3rem auto;
+    overflow: visible; /* Rimosso hidden: permette all'ombra di espandersi senza clipping */
+    position: relative;
+    padding: 2rem 0 5rem 0; /* Padding verticale aumentato per evitare clipping dell'ombra dal mask-image */
+    
+    /* Edge Masking solo sull'asse orizzontale — non interferisce con le ombre verticali */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+}
+
+.deck-track {
+    display: flex;
+    gap: 0.75rem; /* Gap ridotto per proporzione */
+    width: max-content;
+    align-items: center;
+    will-change: transform;
+    animation: deckMarquee 25s linear infinite;
+}
+
+.sys-micro-card {
+    display: flex;
+    flex-direction: column;
+    width: 160px;
+    height: 112px;
+    padding: 0.4rem;
+    text-decoration: none;
+    
+    /* Apple Glassmorphism Material */
+    background: rgba(18, 18, 18, 0.45); /* Nero più profondo ma trasparente */
+    backdrop-filter: blur(16px) saturate(140%); /* Aumento blur per effetto cristallo ghiacciato */
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    
+    /* Bordo esterno minimo */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    
+    /* Specular Highlight: La luce zenitale che colpisce il bordo superiore del vetro */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                0 10px 25px rgba(0, 0, 0, 0.5); /* Ombra di base rinforzata */
+    
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.3s ease, 
+                background 0.3s ease,
+                box-shadow 0.3s ease;
+}
+
+/* --- Neutral Hierarchy --- */
+.micro-title {
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 0.55rem;
+    
+    /* Apple Monochromatic Standard: Bianco Ghiaccio invece di Verde */
+    color: rgba(255, 255, 255, 0.85); 
+    
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-xs);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    /* Preparazione al feedback di innesco */
+    transition: color 0.3s ease;
+}
+
+
+/* --- Spatial Rhythm --- */
+.micro-text {
+    font-family: var(--font-ui);
+    font-size: 0.4rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.25);
+    text-align: center;
+    width: 60%;
+    
+    /* Aumento del margine inferiore (da var(--space-sm) a 0.6rem) per staccare le immagini */
+    margin: 0 auto 0.6rem auto;
+    
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    line-clamp: 4;
+    overflow: hidden;
+}
+
+/* --- Asset Protection & Concentric Radius --- */
+.micro-assets {
+    display: flex;
+    gap: 6px; /* Spazio tra le immagini aumentato per maggiore respiro */
+    flex: 1;
+    overflow: hidden;
+    
+    /* Calcolo concentrico: raggio esterno meno il padding del contenitore */
+    border-radius: calc(var(--radius-md) - 0.2rem); 
+    
+    /* Incorniciatura fisica degli asset per separarli dal vetro */
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.micro-assets img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    flex: 1;
+    opacity: 0.85;
+    transition: opacity 0.3s ease;
+}
+
+/* ==========================================
+   ACTIVE SYSTEMS KINETIC ENGINE [PHASE 3]
+   ========================================== */
+
+.deck-track {
+    /* Attivazione Motore Cinetico */
+    animation: deckMarquee 25s linear infinite;
+}
+
+/* Congelamento del flusso temporale su Hover */
+.sys-preview-deck-wrapper:hover .deck-track {
+    animation-play-state: paused;
+}
+
+/* --- Fluid Interaction & Spring Physics --- */
+.sys-micro-card:hover {
+    /* Sollevamento spaziale e micro-espansione */
+    transform: translateY(-6px) scale(1.02);
+    
+    /* Solidità materica — nessuna alterazione cromatica */
+    background: rgba(25, 25, 25, 0.7);
+    
+    /* Bordo monocromatico: nessun verde */
+    border-color: rgba(255, 255, 255, 0.08);
+    
+    /* Multi-Layer Shadowing neutro:
+       1. Inset highlight zenitale
+       2. Drop-shadow diffuso sull'asse Z — solo profondità, nessun glow cromatico */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25),
+                0 25px 50px rgba(0, 0, 0, 0.65);
+}
+
+/* Accensione degli asset visivi al focus */
+.sys-micro-card:hover .micro-assets img {
+    opacity: 1; 
+}
+
+/* Calcolo Matematico Loop Infinito */
+@keyframes deckMarquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        /* Traslazione calcolata al 50% con compensazione del gap per annullare i micro-scatti */
+        transform: translateX(calc(-50% - (var(--space-md) / 2)));
+    }
+}
+
+/* ==========================================================================
+   [03] OPERATING METHOD — Panel 60vh
+   ========================================================================== */
+
+.sys-method {
+    position:   fixed;
+    bottom:     15px;
+    left:       50%;
+    width:      95%;
+    max-width:  1400px;
+    height:     auto; /* Da 40vh ad auto per contenere tutti i testi in PC */
+    overflow:   hidden;
+
+    /* Nascosto sotto il bordo: compensa la centratura (X:-50%) e l'altezza + gap + ombra (Y) */
+    transform:  translate(-50%, calc(100% + 30px));
+    /* Cinetica in uscita: accelerazione morbida verso il basso */
+    transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+    z-index:    var(--z-panel);
+
+    /* Pure Glass Material */
+    background:              rgba(30, 30, 30, 0.75);
+    backdrop-filter:         blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+
+    /* Apple Island Geometries */
+    border:        var(--sys-border-light);
+    border-radius: var(--radius-xl);
+    box-shadow:    var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.sys-method.is-active {
+    transform: translate(-50%, 0);
+    /* Cinetica in entrata: decelerazione frenata in stile Apple */
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ── Inner — padding bilanciato nei 40vh ── */
+.method-inner {
+    width:           100%;
+    height:          auto; /* Da 100% ad auto per assecondare il contenuto in PC */
+    max-width:       1400px;
+    margin:          0 auto;
+    padding:         2rem 5vw 2rem;   /* Centratura verticale tra top round e fondo */
+
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
+    justify-content: space-between;
+    text-align:      center;
+    overflow:        hidden;
+}
+
+/* ── Titolo ── */
+.method-title {
+    display:        none !important; /* Rimosso in tutti i formati come richiesto */
+    font-family:    var(--font-ui);
+    font-size:      1.35rem;
+    font-weight:    700; /* Solido per mantenere leggibilità con l'alpha basso */
+    letter-spacing: 0.1em;
+    text-transform: uppercase !important;
+    color:          rgba(157, 185, 126, 0.2) !important;
+    margin-bottom:  1rem;
+    flex-shrink:    0;
+}
+
+/* ── Intro — compresso per liberare spazio alla griglia ── */
+.method-intro {
+    font-family:    var(--font-mono) !important;
+    font-size:      0.65rem; /* Rimpicciolito in formato PC */
+    font-style:     normal !important;
+    color:          var(--text-secondary);
+    line-height:    1.6;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+    opacity:        0.5;
+    max-width:      900px;
+    margin-bottom:  1.25rem;
+    flex-shrink:    0;
+}
+
+/* ── Grid 2×2 ── */
+.method-list {
+    display:               grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap:            5vw;
+    row-gap:               1.25rem;    /* ↓ da 2.25rem */
+    width:                 100%;
+    text-align:            left;
+    flex:                  none; /* Evita la compressione dell'altezza per mostrare i punti */
+    min-height:            auto;
+    overflow:              visible;
+    align-content:         start;
+}
+
+/* ── Item ── */
+.method-item {
+    /* Puro isolamento spaziale, nessun border */
+    padding-top: 0;
+    overflow:    hidden;
+}
+
+/* ── Numero — JetBrains Mono, Stealth ── */
+.method-num {
+    display:        block;
+    font-family:    var(--font-mono);
+    font-size:      0.7rem;            /* Ridotto al minimo leggibile */
+    font-weight:    500;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    color:          rgba(157, 185, 126, 0.2) !important;
+    margin-bottom:  0.4rem;
+}
+
+/* ── Descrizione — UI Font, Stealth Data ── */
+.method-desc {
+    font-family:    var(--font-ui) !important; /* Forza il font UI scavalcando l'HTML */
+    font-size:      0.875rem;          
+    line-height:    1.6;               /* Respiro ottimale per l'Operating Method */
+    text-transform: lowercase;
+    color:          var(--text-primary);
+    font-weight:    400 !important;    /* Nessun bold */
+    opacity:        0.5 !important;    /* Trasparenza Stealth */
+}
+
+/* ==========================================================================
+   [04] BOTTOM ACTIONS — Contatti
+   ========================================================================== */
+
+.sys-bottom-actions {
+    position:        fixed;
+    bottom:          2rem;
+    left:            0;
+    width:           100%;
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
+    justify-content: center;
+    gap:             0.5rem;
+    z-index:         var(--z-overlay);
+
+    opacity:        0;
+    pointer-events: none;
+    transition:     opacity 0.3s linear;
+}
+
+.sys-bottom-actions.is-active {
+    opacity:        1;
+    pointer-events: auto;
+}
+
+.sys-bottom-actions .cta-secondary {
+    width:            100%;
+    max-width:        200px;
+    padding:          0.5rem 1rem;
+    background-color: var(--sys-bg-primary);
+    font-size:        0.75rem;
+    text-align:       center;
+}
+
+/* ==========================================================================
+   [05] RESPONSIVE
+   ========================================================================== */
+
+/* Tablet ≤ 992px */
+@media (max-width: 992px) {
+    .sys-main {
+        padding-top: 4rem;
+    }
+
+    .method-inner {
+        padding: 1.75rem 4vw 1.25rem;
+    }
+
+    .method-title {
+        font-size:     1.1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .method-intro {
+        font-size:     0.8125rem;
+        margin-bottom: 1rem;
+    }
+
+    .method-list {
+        column-gap: 3vw;
+        row-gap:    1rem;
+    }
+
+    .method-num {
+        font-size:     0.75rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .method-desc {
+        font-size:   0.8125rem;
+        line-height: 1.45;
+    }
+}
+
+/* Mobile ≤ 640px — colonna singola, 60vh */
+@media (max-width: 640px) {
+    .sys-declaration__title {
+        font-size: clamp(1.75rem, 7vw, 2.5rem);
+    }
+
+    .sys-method {
+        height: auto; /* Rimozione altezza fissa per taglio chirurgico dello spazio vuoto inferiore */
+    }
+
+    .method-inner {
+        height:          auto; /* Forza il collasso strutturale sul contenuto effettivo */
+        padding:         1.25rem 1rem 1.5rem; /* Compressione area sicura */
+        justify-content: flex-start;
+        gap:             0.75rem; /* Riduzione gap interno */
+    }
+
+    .method-title {
+        font-size:     0.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .method-intro {
+        font-size:     0.65rem;
+        max-width:     100%;
+        margin-bottom: 0;
+        line-height:   1.3; /* Line-height compresso */
+    }
+
+    .method-list {
+        grid-template-columns: 1fr;
+        row-gap:               0.75rem; /* Compressione gap lista */
+        flex:                  none;
+        min-height:            auto;
+    }
+
+    .method-num {
+        font-size:     0.55rem;
+        margin-bottom: 0.15rem;
+    }
+
+    .method-desc {
+        font-size:   0.65rem;
+        line-height: 1.3;
+    }
+
+    .sys-access-bar__meta {
+        display: none;
+    }
+}
+
+/* Mobile piccolo ≤ 480px */
+@media (max-width: 480px) {
+    .method-inner {
+        padding: 1rem 0.75rem 1rem; /* Compressione estrema */
+        gap: 0.5rem; /* Densità spaziale massima */
+    }
+
+    .method-title {
+        font-size: 0.65rem;
+        margin-bottom: 0.15rem;
+    }
+
+    .method-intro {
+        font-size: 0.55rem;
+        line-height: 1.2;
+    }
+
+    .method-list {
+        row-gap: 0.5rem;
+    }
+
+    .method-num {
+        font-size: 0.5rem;
+    }
+
+    .method-desc {
+        font-size:   0.55rem;
+        line-height: 1.2;
+    }
+}
+
+/* ==========================================
+   ACTIVE SYSTEMS HARDWARE OPTIMIZATION [PHASE 4]
+   ========================================== */
+
+/* 1. Spatial Hierarchy Protection */
+.sys-preview-deck-wrapper {
+    /* Mantiene il deck sul fondo, proteggendo la Access Bar (z-index: 9999) e i menu a tendina */
+    z-index: 10; 
+    /* Forza il browser a delegare il rendering alla GPU per questo specifico blocco */
+    transform: translateZ(0); 
+}
+
+/* 2. Mobile GPU Throttling & Responsive Scaling */
+@media (max-width: 768px) {
+    /* 0. ROOT CENTERING & GAP COMPRESSION */
+    .sys-declaration {
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        width: 100%;
+        gap: 0; /* Controllo manuale esatto delle distanze verticali */
+    }
+
+    /* 1. BLOCCO TESTUALE (Headline & Sub-text tecnico) */
+    .sys-declaration__title {
+        text-align: center;
+        font-size: clamp(1.8rem, 5vw, 2.2rem);
+        line-height: 1.1;
+        width: 100%;
+        margin: 0 auto 0.5rem auto; /* Spazio Titolo-Testo aumentato */
+    }
+
+    .sys-declaration__body {
+        text-align: center;
+        font-size: clamp(0.67rem, 2.2vw, 0.76rem);
+        line-height: 1.4;
+        width: 80%;
+        margin: 0 auto 0 auto; /* Margin-bottom azzerato per calcolo esatto tramite l'elemento successivo */
+        padding: 0;
+    }
+
+    /* 2. TRIGGER PRIMARIO */
+    .sys-declaration__actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin: 2rem auto 0 auto; /* Spazio top: 2rem. Spazio bottom: 0 (compensa i 2rem di padding del carosello sottostante). Centratura ottica assoluta. */
+    }
+
+    #btn-evaluation {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 70%; /* Compressione fisica della cornice (100% - 30%) */
+        white-space: normal; /* Autorizzazione di a capo per contenere la massa testuale */
+        line-height: 1.3;
+        padding: 12px 10px; /* Ripristino padding per bilanciamento volumetrico verticale */
+        font-size: 0.7rem;
+        letter-spacing: 0.05em;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    /* 3. CAROSELLO PROGETTI INFERIORE */
+    .sys-preview-deck-wrapper {
+        display: block; /* Ripristino architettura a blocchi per permettere l'overflow del Marquee */
+        width: 100%;
+        margin: 0 auto;
+        /* Riduce l'area di sfumatura per alleggerire il calcolo dei pixel sulla maschera */
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    }
+
+    .deck-track {
+        display: flex;
+        width: max-content !important; /* Forza l'espansione infinita necessaria al calcolo matematico del 50% */
+        justify-content: flex-start;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        animation: deckMarqueeMobile 25s linear infinite;
+    }
+
+    @keyframes deckMarqueeMobile {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(calc(-50% - 4px)); /* Compensazione matematica per gap di 8px */
+        }
+    }
+
+    .sys-micro-card {
+        /* Rimpicciolito del 30% per viewport limitati */
+        width: 50vw;
+        max-width: 126px;
+        height: 77px;
+    }
+
+    /* Ottimizzazione Tipografica per recupero spazio Immagini */
+    .sys-micro-card .micro-title {
+        font-size: 0.45rem; /* Titolo bianco ridimensionato */
+        margin-bottom: 0.15rem; /* Spazio compresso */
+    }
+
+    .sys-micro-card .micro-text {
+        display: -webkit-box; /* Ripristino nodo dati secondario */
+        font-size: 0.3rem; /* Compressione font estrema */
+        line-height: 1.2;
+        margin: 0 auto 0.2rem auto;
+        -webkit-line-clamp: 2; /* Taglio a 2 righe per salvare area di rendering visivo */
+    }
+}
+
+/* 3. Accessibility & CPU Safety (Prefers Reduced Motion) */
+@media (prefers-reduced-motion: reduce) {
+    .deck-track {
+        /* Spegne il motore cinetico se l'utente richiede movimento ridotto a livello di sistema operativo */
+        animation: none;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 10px; /* Spazio per la scrollbar invisibile */
+    }
+    
+    .sys-micro-card {
+        scroll-snap-align: center;
+    }
+}
