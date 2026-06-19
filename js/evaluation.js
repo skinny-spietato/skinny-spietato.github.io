@@ -392,6 +392,21 @@
     } else {
       window.addEventListener('resize', scrollToBottom);
     }
+
+    // [iOS HACK] Force window to stay at 0,0 when Safari tries to scroll the viewport
+    window.addEventListener('scroll', () => {
+      if (document.activeElement === input) {
+        window.scrollTo(0, 0);
+      }
+    });
+    
+    input.addEventListener('focus', () => {
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        scrollToBottom();
+      }, 50);
+    });
   }
 
   function autoResizeInput() {
