@@ -3,24 +3,10 @@
    ========================================================================== */
 
 /* Layout Globale */
-html {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100dvh;
-    overflow: hidden;
-    overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
-}
-
 body[data-page="evaluation"] {
     padding-top: 0 !important;
-    top: 0;
-    left: 0;
     height: 100dvh;
     width: 100%;
-    position: fixed;
     overflow: hidden;
     background-color: var(--sys-bg-primary);
     display: flex;
@@ -35,8 +21,8 @@ body[data-page="evaluation"] {
     overflow-y: auto;
     position: relative;
     
-    /* Padding-top calcolato: altezza barra + respiro. Padding-bottom: controlli */
-    padding: calc(var(--access-bar-height) + 60px) 4vw calc(var(--controller-h, 110px) + 2rem) 4vw;
+    /* Padding-top calcolato: altezza barra + respiro. Padding-bottom normale */
+    padding: calc(var(--access-bar-height) + 60px) 4vw 2rem 4vw;
     
     /* TRUE SPATIAL OVERLAY: Nasconde il testo solo nel gap di 15px sopra l'Access Bar */
     -webkit-mask-image: linear-gradient(to bottom, transparent 0px, transparent 15px, black 15px, black 100%) !important;
@@ -101,9 +87,7 @@ body[data-page="evaluation"] {
 
 /* Input Area */
 .sys-chat-controller {
-    position: absolute;
-    bottom: 0;
-    left: 0;
+    position: relative;
     width: 100%;
     padding: 1.5rem 4vw 2rem 4vw;
     z-index: var(--z-panel);
@@ -111,6 +95,7 @@ body[data-page="evaluation"] {
     display: flex;
     justify-content: center;
     pointer-events: none;
+    flex-shrink: 0;
 }
 
 .sys-chat-input-wrapper {
