@@ -390,10 +390,12 @@
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', () => {
         document.body.style.height = window.visualViewport.height + 'px';
+        document.body.style.minHeight = window.visualViewport.height + 'px';
         scrollToBottom();
       });
       // Inizializza l'altezza corretta
       document.body.style.height = window.visualViewport.height + 'px';
+      document.body.style.minHeight = window.visualViewport.height + 'px';
     } else {
       window.addEventListener('resize', scrollToBottom);
     }
@@ -407,10 +409,14 @@
     
     input.addEventListener('focus', () => {
       setTimeout(() => {
+        if (window.visualViewport) {
+          document.body.style.height = window.visualViewport.height + 'px';
+          document.body.style.minHeight = window.visualViewport.height + 'px';
+        }
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
         scrollToBottom();
-      }, 50);
+      }, 100);
     });
   }
 
