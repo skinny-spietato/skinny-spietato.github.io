@@ -6,6 +6,9 @@
 body[data-page="evaluation"] {
     padding-top: 0 !important;
     height: 100vh;
+    height: 100dvh;
+    width: 100%;
+    position: fixed;
     overflow: hidden;
     background-color: var(--sys-bg-primary);
     display: flex;

@@ -386,6 +386,12 @@
     sendBtn.addEventListener('click', handleSubmit);
     uploadBtn.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', handleFileUpload);
+    
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', scrollToBottom);
+    } else {
+      window.addEventListener('resize', scrollToBottom);
+    }
   }
 
   function autoResizeInput() {
