@@ -369,6 +369,11 @@
     }
   }
 
+  function scrollToBottomInstant() {
+    if (!canvas) return;
+    canvas.scrollTop = canvas.scrollHeight;
+  }
+
   function init() {
     if (!input || !sendBtn) return;
     input.value = 'Start Preventive Evaluation';
@@ -391,13 +396,13 @@
       window.visualViewport.addEventListener('resize', () => {
         document.body.style.height = window.visualViewport.height + 'px';
         document.body.style.minHeight = window.visualViewport.height + 'px';
-        scrollToBottom();
+        scrollToBottomInstant();
       });
       // Inizializza l'altezza corretta
       document.body.style.height = window.visualViewport.height + 'px';
       document.body.style.minHeight = window.visualViewport.height + 'px';
     } else {
-      window.addEventListener('resize', scrollToBottom);
+      window.addEventListener('resize', scrollToBottomInstant);
     }
 
     // [iOS HACK] Force window to stay at 0,0 when Safari tries to scroll the viewport
@@ -415,8 +420,8 @@
         }
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
-        scrollToBottom();
-      }, 100);
+        scrollToBottomInstant();
+      }, 50);
     });
   }
 
