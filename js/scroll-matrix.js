@@ -41,39 +41,34 @@
         slider.scrollLeft = slideWidth;
     });
 
-    // 4. Meccanica di salto invisibile Anti-Flicker
+    // 4. Meccanica di salto invisibile Anti-Flicker (Debounced per iOS)
+    let scrollTimeout;
+    
     slider.addEventListener('scroll', () => {
-        if (isJumping) return;
+        clearTimeout(scrollTimeout);
+        
+        // Aspettiamo 150ms dalla fine del movimento prima di saltare.
+        // Questo previene il bug di iOS dove il "momentum" e lo "scroll-snap"
+        // costringono la pagina a rimbalzare indietro alla slide precedente.
+        scrollTimeout = setTimeout(() => {
+            const scrollPos = slider.scrollLeft;
+            const maxScroll = slider.scrollWidth - slideWidth;
 
-        const scrollPos = slider.scrollLeft;
-        const maxScroll = slider.scrollWidth - slideWidth;
-
-        // Utente scorre a destra
-        if (scrollPos >= maxScroll - 5) { 
-            isJumping = true;
-            slider.style.scrollSnapType = 'none'; // Spegne snap
-            slider.scrollLeft = slideWidth;       // Salta
-
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    slider.style.scrollSnapType = 'x mandatory'; // Riaccende snap
-                    isJumping = false;
-                });
-            });
-        }
-        // Utente scorre a sinistra
-        else if (scrollPos <= 5) {
-            isJumping = true;
-            slider.style.scrollSnapType = 'none'; // Spegne snap
-            slider.scrollLeft = slideWidth * originalSlides.length; // Salta
-
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    slider.style.scrollSnapType = 'x mandatory'; // Riaccende snap
-                    isJumping = false;
-                });
-            });
-        }
+            // Utente scorre a destra (raggiunge il clone di coda)
+            if (scrollPos >= maxScroll - 5) { 
+                slider.style.scrollSnapType = 'none';
+                slider.scrollLeft = slideWidth;
+                slider.offsetHeight; // Forza il reflow
+                slider.style.scrollSnapType = 'x mandatory';
+            }
+            // Utente scorre a sinistra (raggiunge il clone di testa)
+            else if (scrollPos <= 5) {
+                slider.style.scrollSnapType = 'none';
+                slider.scrollLeft = slideWidth * originalSlides.length;
+                slider.offsetHeight;
+                slider.style.scrollSnapType = 'x mandatory';
+            }
+        }, 150);
     });
 
     // 5. Ricalibrazione dinamica
@@ -139,6 +134,14 @@
 
         overlay.classList.remove('is-active');
         overlay.setAttribute('aria-hidden', 'true');
+
+        // Chiude la preview (HUD Scanner) se aperta
+        const previewUnit = document.getElementById('sys-all-systems-preview');
+        if (previewUnit && previewUnit.classList.contains('is-scanning')) {
+            previewUnit.classList.remove('is-scanning');
+            document.querySelectorAll('.sys-grid-cell.sys-target-locked').forEach(c => c.classList.remove('sys-target-locked'));
+            setTimeout(() => { previewUnit.innerHTML = ''; }, 300);
+        }
 
         setTimeout(() => { AllSystemsState.actionLocked = false; }, LOCK_RELEASE_MS);
     }
