@@ -617,7 +617,8 @@ button:active:not(:disabled) {
    ========================================================================== */
 #sys-proposal-modal,
 #sys-inspect-modal,
-#sys-invoice-modal {
+#sys-invoice-modal,
+#sys-balance-modal {
     position: fixed;
     inset: 0;
     background-color: rgba(15, 15, 15, 0.7);
@@ -692,7 +693,8 @@ button:active:not(:disabled) {
    MODALE PROPOSAL & INVOICE — Contenimento e scroll interno
    ========================================================================== */
 #sys-proposal-modal .modal-content,
-#sys-invoice-modal .modal-content {
+#sys-invoice-modal .modal-content,
+#sys-balance-modal .modal-content {
     overflow-y: auto;
     max-height: 88vh;
     /* Garantisce che il gap del flex non esca fuori */
@@ -703,15 +705,18 @@ button:active:not(:disabled) {
     scrollbar-color: rgba(255,255,255,0.12) transparent;
 }
 #sys-proposal-modal .modal-content::-webkit-scrollbar,
-#sys-invoice-modal .modal-content::-webkit-scrollbar {
+#sys-invoice-modal .modal-content::-webkit-scrollbar,
+#sys-balance-modal .modal-content::-webkit-scrollbar {
     width: 4px;
 }
 #sys-proposal-modal .modal-content::-webkit-scrollbar-track,
-#sys-invoice-modal .modal-content::-webkit-scrollbar-track {
+#sys-invoice-modal .modal-content::-webkit-scrollbar-track,
+#sys-balance-modal .modal-content::-webkit-scrollbar-track {
     background: transparent;
 }
 #sys-proposal-modal .modal-content::-webkit-scrollbar-thumb,
-#sys-invoice-modal .modal-content::-webkit-scrollbar-thumb {
+#sys-invoice-modal .modal-content::-webkit-scrollbar-thumb,
+#sys-balance-modal .modal-content::-webkit-scrollbar-thumb {
     background: rgba(255,255,255,0.12);
     border-radius: 4px;
 }
@@ -996,6 +1001,19 @@ button:active:not(:disabled) {
     border-color: rgba(180, 40, 40, 0.35);
     color: rgba(255, 120, 120, 0.9);
     text-shadow: 0 0 6px rgba(200, 50, 50, 0.3);
+}
+
+.badge-time.badge-unpaid {
+    background: rgba(220, 50, 50, 0.15);
+    border-color: rgba(220, 50, 50, 0.45);
+    color: rgba(255, 60, 60, 0.95);
+    text-shadow: 0 0 8px rgba(220, 50, 50, 0.4);
+}
+
+.badge-time.badge-balance-sent {
+    background: rgba(100, 160, 255, 0.12);
+    border-color: rgba(100, 160, 255, 0.35);
+    color: rgba(120, 180, 255, 0.9);
 }
 
 /* ==========================================================================

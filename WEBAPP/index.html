@@ -577,6 +577,54 @@
     </div>
   </div>
 
+  <!-- MODAL: BALANCE REQUEST / GESTIONE SALDO -->
+  <div id="sys-balance-modal" style="display: none;">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: var(--sys-border-light); padding-bottom: 14px; margin-bottom: 4px; flex-shrink: 0;">
+        <h2 style="margin: 0; font-size: 15px; letter-spacing: 0.04em;">PROTOCOLLO RICHIESTA SALDO</h2>
+      </div>
+
+      <div class="invoice-section-header">DATI CLIENTE E BUDGET</div>
+      <div class="input-group">
+        <label for="bal-cliente-nome">Nome Cliente</label>
+        <input type="text" id="bal-cliente-nome" readonly>
+      </div>
+      <div class="input-group">
+        <label for="bal-cliente-email">Email Cliente</label>
+        <input type="text" id="bal-cliente-email" readonly>
+      </div>
+      <div class="input-group">
+        <label for="bal-budget-totale">Budget Progetto (€)</label>
+        <input type="text" id="bal-budget-totale" readonly>
+      </div>
+      <div class="input-group">
+        <label for="bal-acconto-pagato">Acconto Già Versato (€)</label>
+        <input type="text" id="bal-acconto-pagato" readonly>
+      </div>
+      <div class="input-group">
+        <label for="bal-struttura">Struttura Pagamento Rilevata</label>
+        <input type="text" id="bal-struttura" readonly>
+      </div>
+
+      <div class="invoice-section-header">CONFIGURAZIONE SALDO</div>
+      <div class="input-group">
+        <label for="bal-percentuale">Percentuale Saldo (%)</label>
+        <input type="number" id="bal-percentuale" min="0" max="100" step="1" oninput="aggiornaCalcoloSaldo()">
+      </div>
+      <div class="input-group">
+        <label for="bal-importo">Importo Saldo (€)</label>
+        <input type="number" id="bal-importo" min="0" step="0.01" readonly>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 20px;">
+        <button id="btn-unpaid-balance" class="btn-danger" onclick="eseguiSegnaInadempiente()" style="margin-right: auto;">INADEMPIENTE</button>
+        <button id="btn-close-balance" onclick="chiudiModaleSaldo()">ANNULLA</button>
+        <button id="btn-confirm-balance" class="btn-primary" onclick="eseguiInviaRichiestaSaldo()">RICHIEDI SALDO</button>
+        <button id="btn-balance-paid" class="btn-primary" onclick="eseguiSaldoRicevuto()" style="background: rgba(157, 185, 126, 0.3); border: 1px solid rgba(157, 185, 126, 0.6); color: #FFF; font-weight: bold;">✓ SALDO RICEVUTO</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: DATA INSPECTION (MOD A) -->
   <div id="sys-inspect-modal" style="display: none;">
     <div class="modal-content">

@@ -716,8 +716,22 @@ function renderTabellaAttivi() {
         } catch(e) {}
 
         const isLate = deltaGiorni > 10;
-        const badgeClass = isLate ? 'badge-time badge-late' : 'badge-time';
-        const badgeLabel = isLate ? `+${deltaGiorni}GG ⚠` : `+${deltaGiorni}GG`;
+        let badgeClass = isLate ? 'badge-time badge-late' : 'badge-time';
+        let badgeLabel = isLate ? `+${deltaGiorni}GG ⚠` : `+${deltaGiorni}GG`;
+
+        if (item.statusFinanziario === 'BALANCE_SENT') {
+            badgeClass = 'badge-time badge-balance-sent';
+            badgeLabel = 'SALDO RICHIESTO';
+        } else if (item.statusFinanziario === 'UNPAID_BALANCE') {
+            badgeClass = 'badge-time badge-unpaid';
+            badgeLabel = 'INADEMPIENTE ⚠';
+        }
+
+        const isSaldo100 = (item.paymentStructure === 'SALDO_100_ANTICIPATO');
+        const balanceBtn = isSaldo100 ? '' : `<button class="btn-primary" onclick="apriModaleSaldo('${id}')">GESTISCI SALDO</button>`;
+        const completeBtn = isSaldo100 
+            ? `<button class="btn-primary" onclick="segnaCompletato('${id}')">SEGNA COMPLETATO</button>`
+            : `<button disabled style="opacity: 0.35;">SEGNA COMPLETATO</button>`;
 
         tr.innerHTML = `
             <td>${timeFormatted}</td>
@@ -729,7 +743,8 @@ function renderTabellaAttivi() {
             <td><span class="${badgeClass}">${badgeLabel}</span></td>
             <td class="actions-cell">
                 <button class="btn-primary" onclick="apriIspezione('${id}')">ISPEZIONA</button>
-                <button class="btn-primary" onclick="segnaCompletato('${id}')">SEGNA COMPLETATO</button>
+                ${balanceBtn}
+                ${completeBtn}
                 <button class="btn-danger" onclick="congelaIstanza('${id}')">SCARTA</button>
                 <button class="btn-sys-icon btn-danger" onclick="eliminaIstanza('${id}')" title="ELIMINA DEFINITIVAMENTE" style="background:rgba(180,40,40,0.15);border:1px solid rgba(180,40,40,0.4);color:rgba(255,80,80,0.85);padding:4px 8px;border-radius:4px;cursor:pointer;">🗑️</button>
             </td>
@@ -803,13 +818,23 @@ function renderTabellaCompletati() {
             deltaGiorni = Math.max(0, Math.floor((now - d) / 86400000));
         } catch(e) {}
 
+        const isUnpaid = (item.statusFinanziario === 'UNPAID_BALANCE');
+        if (isUnpaid) {
+            tr.style.background = 'rgba(220, 50, 50, 0.08)';
+            tr.style.borderLeft = '3px solid rgba(220, 50, 50, 0.6)';
+        }
+
+        const badgeHtml = isUnpaid 
+            ? `<span class="badge-time badge-unpaid">INADEMPIENTE</span>` 
+            : `<span class="badge-time">+${deltaGiorni}GG</span>`;
+
         tr.innerHTML = `
             <td>${timeFormatted}</td>
             <td>${id}</td>
             <td>${nome}</td>
             <td>${email}</td>
             <td>€ ${budget}</td>
-            <td><span class="badge-time">+${deltaGiorni}GG</span></td>
+            <td>${badgeHtml}</td>
             <td class="actions-cell">
                 <button class="btn-primary" onclick="apriIspezione('${id}')">ISPEZIONA</button>
                 ${item.invoiced ? 
@@ -1237,6 +1262,140 @@ window.eseguiConfermaFattura = async function() {
         confirmBtn.disabled = false;
         sysAlert("[ERRORE TRASMISSIONE]: " + (res?.error || 'Invio fallito.'));
     }
+};
+
+// =========================================================================
+// [MODULO GESTIONE SALDO / INADEMPIENZA]
+// =========================================================================
+let balanceContext = null;
+
+window.apriModaleSaldo = function(idIstanza) {
+    if (!dashboardData) return;
+    const allInstances = [
+        ...(dashboardData.pending || []),
+        ...(dashboardData.waiting || []),
+        ...(dashboardData.active || []),
+        ...(dashboardData.completed || []),
+        ...(dashboardData.frozen || [])
+    ];
+    const instance = allInstances.find(item => item.idIstanza === idIstanza);
+    if (!instance) return;
+
+    balanceContext = instance;
+
+    // Dati Cliente e Progetto
+    document.getElementById('bal-cliente-nome').value = (instance.clientName || '').toUpperCase();
+    document.getElementById('bal-cliente-email').value = instance.clientEmail || '';
+    
+    // Calcola e formatta budget e acconto
+    const budgetVal = parseFloat(instance.budget) || 0;
+    const accontoVal = parseFloat(instance.acconto) || 0;
+    
+    document.getElementById('bal-budget-totale').value = budgetVal ? budgetVal.toFixed(2) : '0.00';
+    document.getElementById('bal-acconto-pagato').value = accontoVal ? accontoVal.toFixed(2) : '0.00';
+    document.getElementById('bal-struttura').value = (instance.paymentStructure || 'N/D').toUpperCase();
+
+    // Rileva automaticamente la percentuale residua di default
+    let defaultPercentage = 50;
+    if (instance.paymentStructure) {
+        const struct = instance.paymentStructure.toUpperCase();
+        if (struct === 'ACCONTO_50') {
+            defaultPercentage = 50;
+        } else if (struct === 'ACCONTO_75') {
+            defaultPercentage = 25;
+        } else if (struct.startsWith('OVERRIDE_') && struct.endsWith('PCT')) {
+            const match = struct.match(/OVERRIDE_(\d+)PCT/);
+            if (match) {
+                const paidPct = parseInt(match[1], 10);
+                defaultPercentage = Math.max(0, 100 - paidPct);
+            }
+        }
+    }
+    
+    document.getElementById('bal-percentuale').value = defaultPercentage;
+    
+    aggiornaCalcoloSaldo();
+
+    document.getElementById('sys-balance-modal').style.display = 'flex';
+};
+
+window.chiudiModaleSaldo = function() {
+    document.getElementById('sys-balance-modal').style.display = 'none';
+    balanceContext = null;
+};
+
+window.aggiornaCalcoloSaldo = function() {
+    if (!balanceContext) return;
+    const budgetVal = parseFloat(balanceContext.budget) || 0;
+    const pct = parseFloat(document.getElementById('bal-percentuale').value) || 0;
+    const importoSaldo = (budgetVal * pct / 100).toFixed(2);
+    document.getElementById('bal-importo').value = importoSaldo;
+};
+
+window.eseguiInviaRichiestaSaldo = async function() {
+    if (!balanceContext) return;
+
+    const confirmBtn = document.getElementById('btn-confirm-balance');
+    const origText = confirmBtn.innerText;
+    confirmBtn.innerText = 'TRASMISSIONE...';
+    confirmBtn.disabled = true;
+
+    const payload = {
+        idIstanza: balanceContext.idIstanza,
+        percentage: parseFloat(document.getElementById('bal-percentuale').value) || 0,
+        amount: parseFloat(document.getElementById('bal-importo').value) || 0
+    };
+
+    const res = await sendToBackend('ADMIN_SEND_BALANCE_REQUEST', payload);
+
+    if (res && !res.error) {
+        sysAlert(`Richiesta di saldo inviata con successo per ${balanceContext.idIstanza}.`, '✅');
+        if (typeof sysNotify === 'function') sysNotify("Richiesta Saldo Inviata", { body: `Email inviata a ${balanceContext.clientEmail}` });
+        
+        chiudiModaleSaldo();
+        await ricaricaDashboard();
+    } else {
+        confirmBtn.innerText = origText;
+        confirmBtn.disabled = false;
+        sysAlert("[ERRORE TRASMISSIONE]: " + (res?.error || 'Invio fallito.'));
+    }
+};
+
+window.eseguiSegnaInadempiente = async function() {
+    if (!balanceContext) return;
+
+    if (!confirm("Sei sicuro di voler contrassegnare questo cliente come INADEMPIENTE? Il progetto verrà spostato nei completati con badge di allerta rosso.")) {
+        return;
+    }
+
+    const unpaidBtn = document.getElementById('btn-unpaid-balance');
+    const origText = unpaidBtn.innerText;
+    unpaidBtn.innerText = 'REGISTRAZIONE...';
+    unpaidBtn.disabled = true;
+
+    const payload = {
+        idIstanza: balanceContext.idIstanza
+    };
+
+    const res = await sendToBackend('ADMIN_MARK_BALANCE_UNPAID', payload);
+
+    if (res && !res.error) {
+        sysAlert(`Stato impostato su INADEMPIENTE per ${balanceContext.idIstanza}.`, '⚠');
+        
+        chiudiModaleSaldo();
+        await ricaricaDashboard();
+    } else {
+        unpaidBtn.innerText = origText;
+        unpaidBtn.disabled = false;
+        sysAlert("[ERRORE]: " + (res?.error || 'Registrazione fallita.'));
+    }
+};
+
+window.eseguiSaldoRicevuto = function() {
+    if (!balanceContext) return;
+    const id = balanceContext.idIstanza;
+    chiudiModaleSaldo();
+    segnaCompletato(id);
 };
 
 window.apriIspezione = function(idIstanza) {
