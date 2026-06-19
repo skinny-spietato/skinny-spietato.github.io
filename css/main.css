@@ -12,7 +12,7 @@
 /* Inter — UI principale */
 @font-face {
     font-family: 'Inter';
-    src: url('../../FONT/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+    src: url('../FONT/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype');
     font-weight: 100 900;
     font-style: normal;
     font-display: block;
@@ -20,7 +20,7 @@
 
 @font-face {
     font-family: 'Inter';
-    src: url('../../FONT/Inter/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype');
+    src: url('../FONT/Inter/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype');
     font-weight: 100 900;
     font-style: italic;
     font-display: block;
@@ -29,7 +29,7 @@
 /* Source Serif 4 — documentazione, testi istituzionali */
 @font-face {
     font-family: 'Source Serif 4';
-    src: url('../../FONT/Source_Serif_4/SourceSerif4-VariableFont_opsz,wght.ttf') format('truetype');
+    src: url('../FONT/Source_Serif_4/SourceSerif4-VariableFont_opsz,wght.ttf') format('truetype');
     font-weight: 100 900;
     font-style: normal;
     font-display: block;
@@ -37,7 +37,7 @@
 
 @font-face {
     font-family: 'Source Serif 4';
-    src: url('../../FONT/Source_Serif_4/SourceSerif4-Italic-VariableFont_opsz,wght.ttf') format('truetype');
+    src: url('../FONT/Source_Serif_4/SourceSerif4-Italic-VariableFont_opsz,wght.ttf') format('truetype');
     font-weight: 100 900;
     font-style: italic;
     font-display: block;
@@ -46,7 +46,7 @@
 /* JetBrains Mono — dati grezzi, label tecniche, status bar, output bot */
 @font-face {
     font-family: 'JetBrains Mono';
-    src: url('../../FONT/JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf') format('truetype');
+    src: url('../FONT/JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf') format('truetype');
     font-weight: 100 800;
     font-style: normal;
     font-display: block;
@@ -54,7 +54,7 @@
 
 @font-face {
     font-family: 'JetBrains Mono';
-    src: url('../../FONT/JetBrains_Mono/JetBrainsMono-Italic-VariableFont_wght.ttf') format('truetype');
+    src: url('../FONT/JetBrains_Mono/JetBrainsMono-Italic-VariableFont_wght.ttf') format('truetype');
     font-weight: 100 800;
     font-style: italic;
     font-display: block;
@@ -642,4 +642,14 @@ img, video {
 
 .sys-access-bar[data-status="denied"] .sys-access-bar__dot::after {
     transform: rotate(-45deg);
+}
+
+/* ==========================================================================
+   [NEW] iOS ZOOM FIX
+   Prevent auto-zoom on input focus for mobile devices
+   ========================================================================== */
+@media (max-width: 768px) {
+    input, textarea, select {
+        font-size: 16px !important;
+    }
 }

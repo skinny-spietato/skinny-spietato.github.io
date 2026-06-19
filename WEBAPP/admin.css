@@ -1954,7 +1954,7 @@ button:active:not(:disabled) {
     .input-group textarea,
     .asset-input {
         width: 100%;
-        font-size: 11px; /* Rimpiccioliti per formato cellulare */
+        font-size: 16px !important; /* Rimpiccioliti per formato cellulare ma 16px per evitare zoom iOS */
         padding: 8px 10px; /* Riduzione ingombro verticale */
     }
 
