@@ -19,6 +19,7 @@ body[data-page="evaluation"] {
     width: 100%;
     margin-top: 0 !important; /* Rimuove il taglio a mezz'aria */
     overflow-y: auto;
+    overflow-x: hidden;
     position: relative;
     
     /* Padding-top calcolato: altezza barra + respiro. Padding-bottom normale */
@@ -738,6 +739,7 @@ body[data-page="evaluation"] {
         max-width: 48%; /* Restrizione volumetrica per garantire coesistenza lineare */
         flex: 1 1 auto;
         padding: 4px 2px;
+        font-size: 0.5rem; /* Forza la stessa dimensione degli altri bottoni */
     }
 
     /* =========================================================

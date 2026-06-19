@@ -132,13 +132,13 @@
 
   const oracleBtn = document.createElement('button');
   oracleBtn.id = 'sys-oracle-btn';
-  oracleBtn.style.cssText = `position: fixed; bottom: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background-color: rgba(25, 25, 25, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: var(--sys-shadow-glass); display: flex; align-items: center; justify-content: center; z-index: 10001; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: rgba(157, 185, 126, 0.6); font-size: 20px; font-family: monospace; outline: none; padding: 0;`;
+  oracleBtn.style.cssText = `position: absolute; bottom: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background-color: rgba(25, 25, 25, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: var(--sys-shadow-glass); display: flex; align-items: center; justify-content: center; z-index: 10001; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: rgba(157, 185, 126, 0.6); font-size: 20px; font-family: monospace; outline: none; padding: 0;`;
   oracleBtn.innerHTML = SVG_CHAT;
   document.body.appendChild(oracleBtn);
 
   const oracleSidebar = document.createElement('div');
   oracleSidebar.id = 'sys-oracle-sidebar';
-  oracleSidebar.style.cssText = `position: fixed; top: 15px; right: -800px; width: 380px; max-width: calc(100vw - 30px); height: calc(100vh - 30px); transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10000; display: flex; flex-direction: column; overflow: hidden;`;
+  oracleSidebar.style.cssText = `position: absolute; top: 15px; right: -800px; width: 380px; max-width: calc(100vw - 30px); height: calc(100vh - 30px); transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10000; display: flex; flex-direction: column; overflow: hidden;`;
   oracleSidebar.innerHTML = `
     <div style="padding: 20px 24px; background: transparent; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: space-between;">
       <span style="color: #9DB97E; font-family: monospace; letter-spacing: 2px; font-weight: bold; opacity: 0.8; font-size: 13px; text-transform: uppercase;">SKINNY_ORACLE_V1.0</span>
@@ -266,6 +266,15 @@
       oraclePill.style.borderColor = 'rgba(255,255,255,0.22)';
       oraclePill.style.boxShadow = 'inset 0 1px 4px rgba(0,0,0,0.2), 0 0 0 2px rgba(157,185,126,0.08)';
     }
+    // Sincronizzazione dinamica per tastiera iOS (uguale alla chat principale)
+    setTimeout(() => {
+      if (window.visualViewport) {
+        document.body.style.height = window.visualViewport.height + 'px';
+        document.body.style.minHeight = window.visualViewport.height + 'px';
+      }
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+    }, 50);
   });
   oracleInput.addEventListener('blur', () => {
     if (oraclePill) {
