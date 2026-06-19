@@ -388,7 +388,12 @@
     fileInput.addEventListener('change', handleFileUpload);
     
     if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', scrollToBottom);
+      window.visualViewport.addEventListener('resize', () => {
+        document.body.style.height = window.visualViewport.height + 'px';
+        scrollToBottom();
+      });
+      // Inizializza l'altezza corretta
+      document.body.style.height = window.visualViewport.height + 'px';
     } else {
       window.addEventListener('resize', scrollToBottom);
     }
