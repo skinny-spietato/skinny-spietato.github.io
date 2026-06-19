@@ -19,7 +19,7 @@ body[data-page="evaluation"] {
     width: 100%;
     margin-top: 0 !important; /* Rimuove il taglio a mezz'aria */
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: hidden; /* Strict lock on horizontal scroll */
     position: relative;
     
     /* Padding-top calcolato: altezza barra + respiro. Padding-bottom normale */
@@ -131,6 +131,7 @@ body[data-page="evaluation"] {
     outline: none;
     height: 36px;
     line-height: 1.5;
+    overflow-x: hidden; /* Blocca scorrimento orizzontale del testo */
     transition: color var(--transition-fast);
 }
 
@@ -739,7 +740,11 @@ body[data-page="evaluation"] {
         max-width: 48%; /* Restrizione volumetrica per garantire coesistenza lineare */
         flex: 1 1 auto;
         padding: 4px 2px;
-        font-size: 0.5rem; /* Forza la stessa dimensione degli altri bottoni */
+        font-size: 0.5rem !important;
+        -webkit-appearance: none;
+        appearance: none;
+        text-align: center;
+        text-align-last: center;
     }
 
     /* =========================================================

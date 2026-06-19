@@ -132,13 +132,13 @@
 
   const oracleBtn = document.createElement('button');
   oracleBtn.id = 'sys-oracle-btn';
-  oracleBtn.style.cssText = `position: absolute; bottom: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background-color: rgba(25, 25, 25, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: var(--sys-shadow-glass); display: flex; align-items: center; justify-content: center; z-index: 10001; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: rgba(157, 185, 126, 0.6); font-size: 20px; font-family: monospace; outline: none; padding: 0;`;
+  oracleBtn.style.cssText = `position: fixed; bottom: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background-color: rgba(25, 25, 25, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: var(--sys-shadow-glass); display: flex; align-items: center; justify-content: center; z-index: 10001; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: rgba(157, 185, 126, 0.6); font-size: 20px; font-family: monospace; outline: none; padding: 0;`;
   oracleBtn.innerHTML = SVG_CHAT;
   document.body.appendChild(oracleBtn);
 
   const oracleSidebar = document.createElement('div');
   oracleSidebar.id = 'sys-oracle-sidebar';
-  oracleSidebar.style.cssText = `position: absolute; top: 15px; right: -800px; width: 380px; max-width: calc(100vw - 30px); height: calc(100vh - 30px); transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10000; display: flex; flex-direction: column; overflow: hidden;`;
+  oracleSidebar.style.cssText = `position: fixed; top: 15px; right: -800px; width: 380px; max-width: calc(100vw - 30px); height: calc(100vh - 30px); transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10000; display: flex; flex-direction: column; overflow: hidden;`;
   oracleSidebar.innerHTML = `
     <div style="padding: 20px 24px; background: transparent; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center; justify-content: space-between;">
       <span style="color: #9DB97E; font-family: monospace; letter-spacing: 2px; font-weight: bold; opacity: 0.8; font-size: 13px; text-transform: uppercase;">SKINNY_ORACLE_V1.0</span>
@@ -148,7 +148,7 @@
     <div id="sys-oracle-input-container" style="padding: 12px 16px 16px; border-top: 1px solid rgba(255, 255, 255, 0.06);">
       <div id="sys-oracle-pill" style="display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 10px 18px 10px 10px; box-shadow: inset 0 1px 4px rgba(0,0,0,0.2); transition: border-color 0.25s ease, box-shadow 0.25s ease;">
         <button id="sys-oracle-send" style="flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; background-color: rgba(157, 185, 126, 0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-primary); display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 12px; transition: background-color 0.3s ease, transform 0.2s ease; outline: none; padding: 0;">${SVG_ARROW_UP}</button>
-        <input type="text" id="sys-oracle-input" style="flex: 1; background: transparent; border: none; color: #9DB97E; font-family: monospace; font-size: 13px; outline: none; min-width: 0;" placeholder="[ENTER_QUERY_HERE_]" autocomplete="off">
+        <input type="text" id="sys-oracle-input" style="flex: 1; background: transparent; border: none; color: #9DB97E; font-family: monospace; font-size: 16px; outline: none; min-width: 0;" placeholder="[ENTER_QUERY_HERE_]" autocomplete="off">
       </div>
     </div>
   `;
@@ -232,6 +232,7 @@
     /* Sposta SOLO il bottone in alto per schermi fino a 768px (Tablet/Mobile) */
     @media (max-width: 768px) {
       #sys-oracle-btn:not(.sys-oracle-trigger--active) {
+          position: absolute !important;
           /* ASSE Y: Sottrae 14px per bucare il padding invisibile del controller e appoggiarsi sul vetro */
           bottom: calc(var(--controller-h, 110px) - 14px) !important;
           
@@ -243,6 +244,7 @@
     /* Allarga la Island e riposiziona la X interna SOLO per schermi <= 500px (Mobile) */
     @media (max-width: 500px) {
       #sys-oracle-sidebar { 
+          position: absolute !important;
           width: calc(100vw - 48px) !important; 
           height: 55vh !important;
           top: auto !important;
@@ -250,6 +252,7 @@
           border-radius: 24px !important; 
       }
       .sys-oracle-trigger--active {
+          position: absolute !important;
           right: 39px !important; 
           bottom: calc(var(--controller-h, 110px) + 23px) !important; 
       }
@@ -266,7 +269,6 @@
       oraclePill.style.borderColor = 'rgba(255,255,255,0.22)';
       oraclePill.style.boxShadow = 'inset 0 1px 4px rgba(0,0,0,0.2), 0 0 0 2px rgba(157,185,126,0.08)';
     }
-    // Sincronizzazione dinamica per tastiera iOS (uguale alla chat principale)
     setTimeout(() => {
       if (window.visualViewport) {
         document.body.style.height = window.visualViewport.height + 'px';
@@ -416,7 +418,8 @@
 
     // [iOS HACK] Force window to stay at 0,0 when Safari tries to scroll the viewport
     window.addEventListener('scroll', () => {
-      if (document.activeElement === input) {
+      const activeId = document.activeElement ? document.activeElement.id : '';
+      if (document.activeElement === input || activeId === 'sys-oracle-input') {
         window.scrollTo(0, 0);
       }
     });
