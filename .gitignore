@@ -1,5 +1,4 @@
 # Local heavy media folders (uploaded to Cloudinary)
-IMMAGINI/
 VIDEO/
 
 # OS metadata
@@ -16,3 +15,7 @@ build/
 # Backend and Scripts
 APPSCRIPT/
 *.gs
+
+# New deploy materials folder
+SHOP/
+
