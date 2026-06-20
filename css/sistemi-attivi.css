@@ -156,6 +156,10 @@
     align-items:      center;
     justify-content:  center;
     position:         relative;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    transform: translateZ(0);
 }
 
 /* Override: le classi .grid-item non aggiungono vincoli di altezza propria */
@@ -265,6 +269,10 @@
     width:       auto;
     flex-shrink: 0;
     background:  transparent;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    transform: translateZ(0);
 }
 
 .sys-fatal-bloom-carousel .carousel-item img {
