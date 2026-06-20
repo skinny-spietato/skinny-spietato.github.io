@@ -176,12 +176,18 @@
 }
 
 /* Media: height 100%, width auto → rispetta l'aspect ratio nativo */
+.carousel-item {
+    border-radius: 30px;
+    overflow: hidden;
+}
+
 .carousel-item img {
     height:        100%;
     width:         auto;
     object-fit:    contain;
     display:       block;
-    border-radius: var(--radius-md);
+    border-radius: 30px;
+    overflow:      hidden;
 }
 
 /* ── [07] VIDEO ITEM — 16:9 landscape (Black Sheep LED walls) ──────────── */
@@ -265,6 +271,8 @@
     width:       auto;
     flex-shrink: 0;
     background:  transparent;
+    border-radius: 30px;
+    overflow: hidden;
 }
 
 .sys-fatal-bloom-carousel .carousel-item img {
@@ -272,8 +280,9 @@
     width:         auto;
     max-width:     none;
     object-fit:    contain;
-    border-radius: var(--radius-soft);
+    border-radius: 30px;
     display:       block;
+    overflow: hidden;
 }
 
 /* ── [10] CTA BLOCK ─────────────────────────────────────────────────────── */
