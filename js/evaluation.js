@@ -9,7 +9,7 @@
   // -----------------------------------------------------------
   // CONFIGURATION
   // -----------------------------------------------------------
-  const API_URL = "https://script.google.com/macros/s/AKfycbz1sfWsHFTQF1objznqF-veXAy74_MxnAPn8MGLA7c8Vk5Tb86RJHveYSLxXHVN11R5Rw/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbzqvVJ7mJhJz2ZemAxTl1puBVvivAQ1Ld0ogGIL7_9gdhd9e5dCsugLXGQ3htqNe7z9Gw/exec";
 
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const SITOSS_GLOSSARY = "ASSET: Elementi visivi finali (3D, Cinematic, Prototyping). Non sono bozzetti. BRIEF: Protocollo tecnico vincolante. REVISIONI: Ricalibrazioni entro il 10% del volume originale. BUDGET TIER 1 (< 600€): Solo micro-asset, richiede saldo anticipato 100%. BUDGET TIER 2 (600€ - 1k): Visual Identity base e 3D Essentials. BUDGET TIER 3 (1k - 5k): Prototipazione avanzata e architetture Full OS. BUDGET TIER 4 (5k - 10k): Sistemi complessi e High-end Motion Design. BUDGET TIER 5 (> 10k): Enterprise Visual Engineering ad alta densità.";
