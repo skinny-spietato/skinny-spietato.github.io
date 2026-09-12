@@ -119,6 +119,12 @@
     }, { passive: true });
 
     window.addEventListener('touchmove', function (e) {
+        /* Se siamo in modalità terminale (evaluation), disabilita la logica home e permetti lo scroll nativo */
+        if (document.body.getAttribute('data-page') === 'evaluation') return;
+
+        /* Allow scroll for privacy modal and internal scrollables */
+        if (e.target.closest('.sys-privacy-content')) return;
+
         e.preventDefault();
 
         /* Action lock: un solo commit per gesto */
@@ -152,6 +158,12 @@
     ═══════════════════════════════════════════════════════════════════ */
 
     window.addEventListener('wheel', function (e) {
+        /* Se siamo in modalità terminale (evaluation), disabilita la logica home e permetti lo scroll nativo */
+        if (document.body.getAttribute('data-page') === 'evaluation') return;
+
+        /* Allow scroll for privacy modal and internal scrollables */
+        if (e.target.closest('.sys-privacy-content')) return;
+
         e.preventDefault();
 
         /* Ignora componente orizzontale dominante */

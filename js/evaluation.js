@@ -9,7 +9,7 @@
   // -----------------------------------------------------------
   // CONFIGURATION
   // -----------------------------------------------------------
-  const API_URL = "https://script.google.com/macros/s/AKfycbzqvVJ7mJhJz2ZemAxTl1puBVvivAQ1Ld0ogGIL7_9gdhd9e5dCsugLXGQ3htqNe7z9Gw/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbz1sfWsHFTQF1objznqF-veXAy74_MxnAPn8MGLA7c8Vk5Tb86RJHveYSLxXHVN11R5Rw/exec";
 
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const SITOSS_GLOSSARY = "ASSET: Elementi visivi finali (3D, Cinematic, Prototyping). Non sono bozzetti. BRIEF: Protocollo tecnico vincolante. REVISIONI: Ricalibrazioni entro il 10% del volume originale. BUDGET TIER 1 (< 600€): Solo micro-asset, richiede saldo anticipato 100%. BUDGET TIER 2 (600€ - 1k): Visual Identity base e 3D Essentials. BUDGET TIER 3 (1k - 5k): Prototipazione avanzata e architetture Full OS. BUDGET TIER 4 (5k - 10k): Sistemi complessi e High-end Motion Design. BUDGET TIER 5 (> 10k): Enterprise Visual Engineering ad alta densità.";
@@ -132,7 +132,7 @@
 
   const oracleBtn = document.createElement('button');
   oracleBtn.id = 'sys-oracle-btn';
-  oracleBtn.style.cssText = `position: fixed; bottom: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background-color: rgba(25, 25, 25, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: var(--sys-shadow-glass); display: flex; align-items: center; justify-content: center; z-index: 10001; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: rgba(157, 185, 126, 0.6); font-size: 20px; font-family: monospace; outline: none; padding: 0;`;
+  oracleBtn.style.cssText = `position: fixed; bottom: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; background-color: rgba(25, 25, 25, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: var(--sys-shadow-glass); display: none; align-items: center; justify-content: center; z-index: 10001; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); color: rgba(157, 185, 126, 0.6); font-size: 20px; font-family: monospace; outline: none; padding: 0;`;
   oracleBtn.innerHTML = SVG_CHAT;
   document.body.appendChild(oracleBtn);
 
@@ -358,8 +358,8 @@
     if (e && e.key === 'Enter') return;
 
     if (!inputLocked && input.value) {
-      // 1. AUTO-ERASER: Intercetta e vaporizza il placeholder
-      const exampleRegex = /\s*\(e\.g\.[^)]+\)/i;
+      // 1. AUTO-ERASER: Intercetta e vaporizza il placeholder (supporta sia "e.g." che "es.")
+      const exampleRegex = /\s*\(e(?:\.g|s)\.[^)]+\)/i;
       if (exampleRegex.test(input.value)) {
         input.value = input.value.replace(exampleRegex, '');
         // BETA: Ripristino proattivo dello spazio vitale se assente
@@ -434,6 +434,39 @@
         document.body.scrollTop = 0;
         scrollToBottomInstant();
       }, 50);
+    });
+
+    if (window.location.search.includes('autostart=1')) {
+      setTimeout(() => {
+        if (typeof handleSubmit === 'function') {
+          handleSubmit();
+        }
+      }, 300);
+    }
+
+    // Gestione ritorno dalla cache di Safari (Bfcache) per l'Easter Egg
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted || window.performance && window.performance.navigation.type === 2) {
+        const flash = document.getElementById('sys-easter-egg-flash');
+        if (flash) flash.remove();
+        
+        // Sblocca input nel caso in cui Safari abbia freezato la barra
+        inputLocked = false;
+        unlockInput();
+        
+        // Ripristina l'interfaccia originale della Home Page
+        const wrapper = document.getElementById('sys-chat-input-container');
+        const btnEvaluation = document.getElementById('btn-evaluation');
+        const declarationText = document.getElementById('sys-declaration-text');
+        const ghostRules = document.getElementById('sys-ghost-rules');
+        
+        if (btnEvaluation) btnEvaluation.style.display = '';
+        if (wrapper) wrapper.style.display = 'none';
+        if (declarationText) declarationText.style.display = '';
+        if (ghostRules) ghostRules.style.display = 'none';
+        
+        if (input) input.value = 'Start Preventive Evalutation';
+      }
     });
   }
 
@@ -632,7 +665,7 @@
     lockInput();
     const bubble = createBotRow();
 
-    typeText(bubble, text, 0, () => { scrollToBottom(); }, () => {
+    typeText(bubble, text, 0, () => { scrollToBottomInstant(); }, () => {
       isBotTyping = false;
       // MODULO 3 — Chat Logger (registra dopo il typewriter)
       sysChatTranscript.push(`[${new Date().toISOString()}] [SYS]: ${text}`);
@@ -671,12 +704,6 @@
 
               if (item.label === 'ASSET COUNT') {
                 LeadData.assetCount = val;
-
-                if (currentStep === 7) {
-                  LeadData.extraRevisions = LeadData.extraRevisions || '1';
-                  currentStep = 7.3;
-                  injectInputPrompt('PROJECT SCOPE: (e.g. Complete Visual Identity overhaul for a new streetwear brand)');
-                }
               } else if (item.label === 'REQUESTED REVISIONS') {
                 LeadData.extraRevisions = val;
               }
@@ -728,8 +755,10 @@
         bubble.appendChild(repliesContainer);
         scrollToBottom();
       }
-      unlockInput();
-      if (onDone) onDone();
+      setTimeout(() => {
+        unlockInput();
+        if (onDone) onDone();
+      }, 50);
     });
   }
 
@@ -766,7 +795,7 @@
     let text = input.value.trim();
 
     // SCUDO AUTO-ERASER: Purga eventuali esempi testuali residui prima del processamento
-    text = text.replace(/\s*\(e\.g\.[^)]+\)/i, '').trim();
+    text = text.replace(/\s*\(e(?:\.g|s)\.[^)]+\)/i, '').trim();
 
     if (!text && pendingFiles.length === 0) return;
 
@@ -777,7 +806,7 @@
       resetInput();
       lockInput(true);
       if (uploadBtn) uploadBtn.style.display = 'none';
-      appendBotInstant('TOXIC BEHAVIOR OR PROTOCOL BYPASS DETECTED.');
+      appendBotInstant('COMPORTAMENTO TOSSICO O BYPASS DEL PROTOCOLLO RILEVATO.');
       setTimeout(() => triggerBanishment("POLICY_VIOLATION_UNAUTHORIZED_BEHAVIOR"), 1500);
       return;
     }
@@ -792,7 +821,56 @@
       return;
     }
 
+
+
     if (currentStep === 0) {
+      const isStartTrigger = /^start\s*prevent[a-z]*\s*eval.*/i.test(text);
+      if (!isStartTrigger) {
+        lockInput(true);
+        const wrapper = document.getElementById('sys-chat-input-container');
+        const sBtn = document.getElementById('sys-chat-send');
+        if (wrapper && sBtn) {
+          wrapper.style.transition = 'transform 0.1s ease-in-out';
+          sBtn.style.transition = 'background-color 0.2s, color 0.2s';
+          sBtn.style.backgroundColor = '#7D2940';
+          sBtn.style.color = '#ffffff';
+          
+          let shakes = 0;
+          const shakeInterval = setInterval(() => {
+            shakes++;
+            wrapper.style.transform = shakes % 2 === 0 ? 'translateX(-8px)' : 'translateX(8px)';
+            if (shakes >= 5) {
+              clearInterval(shakeInterval);
+              wrapper.style.transform = 'translateX(0)';
+              
+              setTimeout(() => {
+                wrapper.style.transition = '';
+                sBtn.style.transition = '';
+                sBtn.style.backgroundColor = '';
+                sBtn.style.color = '';
+                
+                const btnEvaluation = document.getElementById('btn-evaluation');
+                const declarationText = document.getElementById('sys-declaration-text');
+                const ghostRules = document.getElementById('sys-ghost-rules');
+                
+                if (btnEvaluation) btnEvaluation.style.display = '';
+                if (wrapper) wrapper.style.display = 'none';
+                if (declarationText) declarationText.style.display = '';
+                if (ghostRules) ghostRules.style.display = 'none';
+                
+                input.value = 'Start Preventive Evalutation';
+                inputLocked = false;
+                unlockInput();
+              }, 400);
+            }
+          }, 80);
+        } else {
+          inputLocked = false;
+          unlockInput();
+        }
+        return; // Interrompe il processo, non avvia la chat
+      }
+
       updateStatusBar('request');
     }
 
@@ -831,15 +909,13 @@
     const restoreCurrentPrompt = () => {
       if (isBotTyping) return;
       switch (currentStep) {
-        case 1.1: injectInputPrompt('FULL NAME: (e.g. Skinny Spietato or SS Company)'); break;
-        case 1.2: injectInputPrompt('WEBSITE/SOCIAL LINK: (e.g. https://instagram.com/yourbrand or www.yourwebsite.com)'); break;
-        case 1.3: injectInputPrompt('PHONE CONTACT: (e.g. +39 333 123 4567)'); break;
-        case 2: injectInputPrompt('EMAIL: (e.g. example@email.com)'); break;
-        case 7.3: injectInputPrompt('PROJECT SCOPE: (e.g. Complete Visual Identity overhaul for a new streetwear brand)'); break;
-        case 7.4: injectInputPrompt('ASSET TYPE: (e.g. 3D Garment animations and high-end logo design)'); break;
-        case 7.5: injectInputPrompt('PHYSICAL OUTPUT / PRODUCTION: (e.g. creation of 10 3D printed items or large-scale t-shirt production)'); break;
-        case 7.6: injectInputPrompt('REQUESTED SUBJECTS: (e.g. 3 Hoodies, 2 T-Shirts, and 1 metallic mascot)'); break;
-        case 7.7: injectInputPrompt('VISUAL STYLE AND REFERENCE: (e.g. Dark futuristic aesthetic, cyberpunk mood, similar to the attached moodboard)'); break;
+        case 1.1: injectInputPrompt('FULL NAME: (es. Skinny Spietato)'); break;
+        case 1.2: injectInputPrompt('WEBSITE/SOCIAL LINK: (es. www.skinnyspietato.com)'); break;
+        case 1.3: injectInputPrompt('PHONE CONTACT: (es. +39 333 123 4567)'); break;
+        case 2: injectInputPrompt('EMAIL: (es. skinnyspietato@email.com)'); break;
+        case 7: injectInputPrompt('PROJECT BRIEF: (es. Rinnovo streetwear: 3 felpe fisiche + 1 animazione 3D MP4 per social)'); break;
+        case 7.2: injectInputPrompt('VISUAL STYLE: (es. Mood cyberpunk, estetica dark/neon, vedi allegati)'); break;
+        case 7.3: injectInputPrompt('TIMELINE: (es. Entro il 15 Novembre)'); break;
       }
     };
 
@@ -848,7 +924,7 @@
     if (currentStep > 0 && inputUpper) {
       const validEntities = ['COMPANY', 'STARTUP', 'PRIVATE'];
       const validAreas = ['ITALY', 'EUROPE', 'EXTRA-EU'];
-      const validScopes = ['VISUAL IDENTITY', 'MERCHANDISING', '3D/MOTION', '3D/GARMENT', '3D/PROTOTYPE', 'PRINT ASSET', 'FULL SITE'];
+      const validScopes = ['MUSIC SERVICE', 'BRAND IDENTITY', 'FLYER & EVENT', 'APPAREL, PRINT & TECHPACK', '3D MOCKUP & PROTOTYPING', 'LED WALL & ADV FILM', 'WEB INFRASTRUCTURE'];
       const validBudgets = ['< 600€', '600€ - 1K', '1K-5K', '5K-10K', '> 10K'];
 
       // --- LOGICA ENTITIES ---
@@ -939,10 +1015,13 @@
     // --- Fine Master State Override ---
 
     if (currentStep === 0) {
+      // INIZIO CHAT NATIVA: Lancia l'evento per la Home Page
+      document.dispatchEvent(new Event('chatStarted'));
+
       if (files.length) appendUserMessage('', files);
       currentStep = 1;
 
-      const step0Text = 'PROCEED WITH THE INSERTION OF NAME, CONTACTS, AND WEBSITE/SOCIAL LINK.\n(NOTE: The requested data is strictly necessary for the preliminary audit and project calibration. The absence or falsification of these parameters will prevent the system from proceeding with the feasibility analysis. Select the entity type to generate the acquisition module.)';
+      const step0Text = 'INSERIRE NOME, CONTATTI E LINK SITO/SOCIAL.\n(NOTA: Dati necessari per l\'audit preliminare. L\'assenza o falsificazione bloccherà l\'analisi. Seleziona il tipo di entità per generare il modulo.)';
 
       const step0Replies = ['COMPANY', 'STARTUP', 'PRIVATE'];
 
@@ -954,7 +1033,7 @@
       appendUserMessage(userInput);
       LeadData.clientType = userInput.toUpperCase();
       currentStep = 1.1;
-      injectInputPrompt('FULL NAME: (e.g. Skinny Spietato or SS Company)');
+      injectInputPrompt('FULL NAME: (es. Skinny Spietato)');
       return;
     }
 
@@ -965,7 +1044,7 @@
       appendUserMessage(perfectString);
       LeadData.clientName = cleanVal;
       currentStep = 1.2;
-      injectInputPrompt('WEBSITE/SOCIAL LINK: (e.g. https://instagram.com/yourbrand or www.yourwebsite.com)');
+      injectInputPrompt('WEBSITE/SOCIAL LINK: (es. www.skinnyspietato.com)');
       return;
     }
 
@@ -1023,7 +1102,7 @@
         'ENTER VERIFIABLE EMAIL ADDRESS.\n(NOTE: The provided address will serve as the exclusive communication node for quotes, technical documentation, and operational directives. Identity validation via OTP grants the system authorization to transmit service communications and future commercial updates. Enter an operational address.)',
         [],
         true,
-        () => injectInputPrompt('EMAIL: (e.g. example@email.com)')
+        () => injectInputPrompt('EMAIL: (es. skinnyspietato@email.com)')
       );
       return;
     }
@@ -1053,9 +1132,9 @@
           appendUserMessage(perfectString);
         }
 
-        appendBotInstant('INVALID EMAIL FORMAT. RE-ENTER.');
+        appendBotInstant('FORMATO EMAIL NON VALIDO. RE-INSERIRE.');
         unlockInput();
-        injectInputPrompt('EMAIL: (e.g. example@email.com)');
+        injectInputPrompt('EMAIL: (es. skinnyspietato@email.com)');
         return;
       }
 
@@ -1092,7 +1171,7 @@
       const validOptions4 = ['ITALY', 'EUROPE', 'EXTRA-EU'];
       if (!validOptions4.includes(userInput.toUpperCase())) {
         appendUserMessage(userInput);
-        appendBotInstant('INVALID PARAMETER. VALID OPTIONS: ITALY, EUROPE, EXTRA-EU');
+        appendBotInstant('PARAMETRO NON VALIDO. OPZIONI VALIDE: ITALY, EUROPE, EXTRA-EU');
         unlockInput();
         return;
       }
@@ -1100,29 +1179,29 @@
       LeadData.area = userInput.toUpperCase();
       currentStep = 5;
       appendBotMessage(
-        'SELECT INTERVENTION SECTOR.\n(NOTE: Indicate the primary scope of the project. Operational specifications will be detailed in the next step. If the desired visual infrastructure is not present, use the \'OTHER\' option for manual entry.)',
+        'SELEZIONA IL SETTORE DI INTERVENTO.\n(NOTA: Indica lo scopo del progetto. Per richieste non in lista, usa \'OTHER\' per l\'inserimento manuale.)',
         [
-          'VISUAL IDENTITY',
-          'MERCHANDISING',
-          '3D/MOTION',
-          '3D/GARMENT',
-          '3D/PROTOTYPE',
-          'PRINT ASSET',
-          'FULL SITE',
-          { label: 'OTHER', template: 'OTHER: (e.g. Custom 3D Environment or VR Experience)' }
+          'MUSIC SERVICE',
+          'BRAND IDENTITY',
+          'FLYER & EVENT',
+          'APPAREL, PRINT & TECHPACK',
+          '3D MOCKUP & PROTOTYPING',
+          'LED WALL & ADV FILM',
+          'WEB INFRASTRUCTURE',
+          { label: 'OTHER', template: 'OTHER: (es. Ambiente 3D Custom o Esperienza VR)' }
         ]
       );
       return;
     }
 
     if (currentStep === 5) {
-      const validOptions5 = ['VISUAL IDENTITY', 'MERCHANDISING', '3D/MOTION', '3D/GARMENT', '3D/PROTOTYPE', 'PRINT ASSET', 'FULL SITE'];
+      const validOptions5 = ['MUSIC SERVICE', 'BRAND IDENTITY', 'FLYER & EVENT', 'APPAREL, PRINT & TECHPACK', '3D MOCKUP & PROTOTYPING', 'LED WALL & ADV FILM', 'WEB INFRASTRUCTURE'];
       const isStandard = validOptions5.includes(userInput.toUpperCase());
       const isOther = userInput.toUpperCase().startsWith('OTHER:');
 
       if (!isStandard && !isOther) {
         appendUserMessage(userInput);
-        appendBotInstant('VALID OPTIONS REQUIRED. SELECT FROM MENU OR PREFIX "OTHER:"');
+        appendBotInstant('OPZIONI VALIDE RICHIESTE. SELEZIONA DAL MENU O USA IL PREFISSO "OTHER:"');
         unlockInput();
         return;
       }
@@ -1136,7 +1215,7 @@
       // [FIX BUG 1] Registriamo la selezione testuale nel transcript per il pannello Admin
       sysChatTranscript.push(`[${new Date().toISOString()}] [USER]: [AREA OPERATIVA SELEZIONATA]: ${LeadData.area || 'N/D'} // ${userInput}`);
       currentStep = 6;
-      appendBotMessage('DEFINE ALLOCATED BUDGET.\n(NOTE: The indicated allocation will be binding only if congruent with the project\'s architecture. Requests with illogical or speculative economic parameters will cause automatic rejection before the quoting phase. For expenditure thresholds below €600, the protocol requires 100% upfront payment.)', ['< 600€', '600€ - 1k', '1k-5k', '5k-10k', '> 10k']);
+      appendBotMessage('DEFINISCI BUDGET ALLOCATO.\n(NOTA: Deve essere congruente con la portata del progetto. Per budget totali < €600, il protocollo richiede il pagamento anticipato del 100%.)', ['< 600€', '600€ - 1k', '1k-5k', '5k-10k', '> 10k']);
       return;
     }
 
@@ -1144,11 +1223,34 @@
       const validOptions6 = ['< 600€', '600€ - 1k', '1k-5k', '5k-10k', '> 10k'];
       if (!validOptions6.includes(userInput)) {
         appendUserMessage(userInput);
-        appendBotInstant('BINDING PARAMETER REQUIRED. SELECT BUDGET FROM MENU');
+        appendBotInstant('PARAMETRO VINCOLANTE RICHIESTO. SELEZIONA IL BUDGET DAL MENU');
         unlockInput();
         return;
       }
+      
       appendUserMessage(userInput);
+      
+      // Banishment Logic for Budgets based on Scope
+      const scopeUpper = (LeadData.scope || '').toUpperCase();
+      let isBudgetSufficient = true;
+
+      if (scopeUpper === 'BRAND IDENTITY' || scopeUpper === 'LED WALL & ADV FILM') {
+          if (userInput === '< 600€') {
+              isBudgetSufficient = false;
+          }
+      } else if (scopeUpper === 'WEB INFRASTRUCTURE') {
+          if (userInput === '< 600€' || userInput === '600€ - 1k') {
+              isBudgetSufficient = false;
+          }
+      }
+
+      if (!isBudgetSufficient) {
+          LeadData.budget = userInput;
+          evalLog('EVAL_BUDGET_INSUFFICIENT', 'Budget insufficiente per lo scope.', { scope: LeadData.scope, budget: userInput });
+          triggerBanishment('BUDGET INADEGUATO PER L\'INFRASTRUTTURA RICHIESTA. ACCESSO NEGATO.');
+          return;
+      }
+
       LeadData.budget = userInput;
 
       setTimeout(() => {
@@ -1156,78 +1258,127 @@
         uploadBtn.style.display = 'flex';
         const dropdownOptions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'OTHER'];
         appendBotMessage(
-          'PROVIDE PROJECT SPECIFICATIONS AND ASSETS.\n(NOTE: Enter ALL specifications at this stage: the late integration of new operational directives will be classified as an \'Extra Revision\' and deducted from the total count or billed separately. Including visual references via the \'Paperclip\' icon is a fundamental requirement for the project\'s architectural alignment.)',
+          'DEFINISCI SPECIFICHE E CORE DEL PROGETTO.\n(NOTA: Direttive tardive saranno classificate come \'Revisione Extra\'. Seleziona i parametri numerici e descrivi in un unico blocco scopo, soggetti e output finale. Sii chirurgico e conciso.)',
           [
             { type: 'select', label: 'ASSET COUNT', options: dropdownOptions },
             { type: 'select', label: 'REQUESTED REVISIONS', options: dropdownOptions }
           ],
-          false
+          false,
+          () => injectInputPrompt('PROJECT BRIEF: (es. Rinnovo streetwear: 3 felpe fisiche + 1 animazione 3D MP4 per social)')
         );
       }, 400);
       return;
     }
 
-    if (currentStep === 7.3) {
-      let cleanVal = userInput.replace(/^PROJECT\s+SCOP[E]?:?\s*/i, '').trim();
+    if (currentStep === 7) {
+      let cleanVal = userInput.replace(/^PROJECT\s+BRIE[F]?:?\s*/i, '').trim();
       if (!cleanVal) cleanVal = "N/D";
-      let perfectString = "PROJECT SCOPE: " + cleanVal;
+      let perfectString = "PROJECT BRIEF: " + cleanVal;
       appendUserMessage(perfectString, files);
-      LeadData.projectScope = cleanVal;
-      currentStep = 7.4;
-      injectInputPrompt('ASSET TYPE: (e.g. 3D Garment animations and high-end logo design)');
+      LeadData.projectBrief = cleanVal;
+      
+      LeadData.assetCount = LeadData.assetCount || '1';
+      LeadData.extraRevisions = LeadData.extraRevisions || '1';
+
+      currentStep = 7.2;
+      appendBotMessage(
+        'IMPOSTA LA DIREZIONE ARTISTICA E IL MOOD.\n(NOTA: Definisci l\'estetica desiderata. Il caricamento di reference visive tramite l\'icona allegati è strettamente raccomandato per garantire il perfetto allineamento del progetto.)',
+        [],
+        true,
+        () => injectInputPrompt('VISUAL STYLE: (es. Mood cyberpunk, estetica dark/neon, vedi allegati)')
+      );
       return;
     }
 
-    if (currentStep === 7.4) {
-      let cleanVal = userInput.replace(/^ASSET\s+TYP[E]?:?\s*/i, '').trim();
+    if (currentStep === 7.2) {
+      let cleanVal = userInput.replace(/^VISUAL\s+STYL[E]?:?\s*/i, '').trim();
       if (!cleanVal) cleanVal = "N/D";
-      let perfectString = "ASSET TYPE: " + cleanVal;
-      appendUserMessage(perfectString, files);
-      LeadData.assetType = cleanVal;
-      currentStep = 7.5;
-      injectInputPrompt('PHYSICAL OUTPUT / PRODUCTION: (e.g. creation of 10 3D printed items or large-scale t-shirt production)');
-      return;
-    }
-
-    if (currentStep === 7.5) {
-      let cleanVal = userInput.replace(/^PHYSICAL\s+OUTPUT\s*\/\s*PRODUCTIO[N]?:?\s*/i, '').trim();
-      if (!cleanVal) cleanVal = "N/D";
-      let perfectString = "PHYSICAL OUTPUT / PRODUCTION: " + cleanVal;
-      appendUserMessage(perfectString, files);
-      LeadData.physicalOutput = cleanVal;
-      currentStep = 7.6;
-      injectInputPrompt('REQUESTED SUBJECTS: (e.g. 3 Hoodies, 2 T-Shirts, and 1 metallic mascot)');
-      return;
-    }
-
-    if (currentStep === 7.6) {
-      let cleanVal = userInput.replace(/^REQUESTED\s+SUBJECT[S]?:?\s*/i, '').trim();
-      if (!cleanVal) cleanVal = "N/D";
-      let perfectString = "REQUESTED SUBJECTS: " + cleanVal;
-      appendUserMessage(perfectString, files);
-      LeadData.requestedSubjects = cleanVal;
-      currentStep = 7.7;
-      injectInputPrompt('VISUAL STYLE AND REFERENCE: (e.g. Dark futuristic aesthetic, cyberpunk mood, similar to the attached moodboard)');
-      return;
-    }
-
-    if (currentStep === 7.7) {
-      let cleanVal = userInput.replace(/^VISUAL\s+STYLE\s+AND\s+REFERENC[E]?:?\s*/i, '').trim();
-      if (!cleanVal) cleanVal = "N/D";
-      let perfectString = "VISUAL STYLE AND REFERENCE: " + cleanVal;
+      let perfectString = "VISUAL STYLE: " + cleanVal;
       appendUserMessage(perfectString, files);
       LeadData.visualStyle = cleanVal;
+      currentStep = 7.3;
+      appendBotMessage(
+        'DEFINISCI LA TIMELINE OPERATIVA.\n(NOTA: Il parametro temporale influisce direttamente sul calcolo del preventivo finale. Le richieste urgenti attiveranno il protocollo \'RUSH\' con relativa maggiorazione dei costi.)',
+        [
+          '15-30 DAYS',
+          '7-14 DAYS',
+          '< 7 DAYS',
+          { label: 'OTHER', template: 'TIMELINE: (es. Entro il 15 Novembre)' }
+        ]
+      );
+      return;
+    }
 
+    if (currentStep === 7.3) {
+      const isCustom = userInput.toUpperCase().startsWith('TIMELINE:');
+      const validTimelines = ['15-30 DAYS', '7-14 DAYS', '< 7 DAYS'];
+      
+      if (!validTimelines.includes(userInput.toUpperCase()) && !isCustom) {
+        appendUserMessage(userInput);
+        appendBotInstant('PARAMETRO NON VALIDO. SELEZIONA UNA TIMELINE DAL MENU O USA "OTHER".');
+        unlockInput();
+        return;
+      }
+
+      let perfectString = userInput;
+      if (isCustom) {
+        let cleanVal = userInput.replace(/^TIMELINE:\s*/i, '').trim();
+        if (!cleanVal) cleanVal = "N/D";
+        perfectString = "TIMELINE: " + cleanVal;
+      }
+      
+      appendUserMessage(perfectString, files);
+      LeadData.timeline = perfectString;
+
+      // Check se lo scope selezionato è idoneo per sconti/promozioni
+      const discountEligibleScopes = ['MUSIC SERVICE', 'APPAREL, PRINT & TECHPACK', 'FLYER & EVENT', 'LED WALL & ADV FILM', '3D MOCKUP & PROTOTYPING'];
+      const scopeUpper = (LeadData.scope || '').toUpperCase();
+      if (discountEligibleScopes.includes(scopeUpper)) {
+        currentStep = 8;
+        appendBotMessage(
+          'INDICA EVENTUALE SCONTO ATTIVO.\n(NOTA: Per validare la promozione, è obbligatorio inviare uno screenshot dello sconto riscattato via DM o tramite email a info.skinnyspietato@gmail.com, utilizzando ESATTAMENTE la stessa email fornita in questa chat. Senza riscontro, il calcolo tornerà ai parametri standard.)',
+          ['20% DISCOUNT', '3X2 OFFER', 'BONUS PACKAGE', 'NO OFFER']
+        );
+        return;
+      } else {
+        // Scope non idoneo: vai direttamente alla submission
+        LeadData.discountOffer = 'N/A';
+        currentStep = 9;
+        finalizeAndSubmit();
+        return;
+      }
+    }
+
+    // --- STEP 8: Sconti/Promozioni (condizionale) ---
+    if (currentStep === 8) {
+      const validDiscounts = ['20% DISCOUNT', '3X2 OFFER', 'BONUS PACKAGE', 'NO OFFER'];
+      if (!validDiscounts.includes(userInput.toUpperCase())) {
+        appendUserMessage(userInput);
+        appendBotInstant('PARAMETRO NON VALIDO. SELEZIONA UN\'OPZIONE DAL MENU.');
+        unlockInput();
+        return;
+      }
+      appendUserMessage(userInput);
+      LeadData.discountOffer = userInput.toUpperCase();
+      currentStep = 9;
+      finalizeAndSubmit();
+      return;
+    }
+  }
+
+  // -----------------------------------------------------------
+  // FINALIZE AND SUBMIT (Estratto come funzione riutilizzabile)
+  // -----------------------------------------------------------
+  function finalizeAndSubmit() {
       // Fallback Data for backend
       LeadData.deadline = 'Standard';
       LeadData.uploadUrl = (LeadData.finalFiles && LeadData.finalFiles.length > 0) ? 'ATTACHMENTS_PRESENT' : 'NO_ATTACHMENTS';
       LeadData.internalNotes = 'Acquired via Preventive Evaluation Terminal';
 
-      currentStep = 8;
       lockInput();
 
       if (LeadData.finalFiles && LeadData.finalFiles.length > 0) {
-        appendBotInstant('ASSET LOADED: ' + LeadData.finalFiles.length + ' FILE(S) — CHECKSUM OK.', 'sys-log-temp');
+        appendBotInstant('ASSET CARICATO: ' + LeadData.finalFiles.length + ' FILE — CHECKSUM OK.', 'sys-log-temp');
         setTimeout(() => {
           document.querySelectorAll('.sys-log-temp').forEach(n => n.remove());
         }, 2500);
@@ -1236,6 +1387,7 @@
       const auditLog = `COMPILING LEAD DATA...
 \nENTITY: ${LeadData.clientType || 'N/D'} | EMAIL: ${LeadData.clientEmail || 'N/D'}
 \nAREA: ${LeadData.area || 'N/D'} | SCOPE: ${LeadData.scope || 'N/D'} | BUDGET: ${LeadData.budget || 'N/D'}
+\nDISCOUNT: ${LeadData.discountOffer || 'N/A'}
 \nROUTING TO EVALUATION MODULE...`;
 
       appendBotInstant(auditLog);
@@ -1243,8 +1395,6 @@
       setTimeout(() => {
         callGeminiEvaluate();
       }, 800);
-      return;
-    }
   }
 
   // -----------------------------------------------------------
@@ -1262,21 +1412,21 @@
   }
 
   async function callSendOtp(email) {
-    appendBotInstant('SENDING OTP TO: ' + email + '...', 'sys-log-temp');
+    appendBotInstant('INVIO OTP A: ' + email + '...', 'sys-log-temp');
     try {
       const data = await callBackend({ action: 'SEND_OTP', email });
       if (data.status === 'success') {
         currentStep = 2.5;
         otpErrorCount = 0;
         document.querySelectorAll('.sys-log-temp').forEach(node => node.remove());
-        appendBotMessage('OTP SENT. ENTER 5-DIGIT ACCESS CODE.\n(NOTE: The validation token has been forwarded to the provided address. Check your inbox and junk/SPAM folder. The code has a limited time validity. Enter the numeric code to unlock the terminal.)');
+        appendBotMessage('OTP INVIATO. INSERISCI CODICE DI ACCESSO A 5 CIFRE.\n(NOTA: Token inoltrato all\'indirizzo fornito. Controlla lo SPAM. Il codice ha validità limitata. Inseriscilo per sbloccare il terminale.)');
       } else {
-        appendBotInstant((data.message || 'SERVER_FAILURE') + '. RE-ENTER EMAIL.');
+        appendBotInstant((data.message || 'SERVER_FAILURE') + '. RE-INSERIRE EMAIL.');
         unlockInput();
       }
     } catch (e) {
       evalLog('EVAL_OTP_SEND_FAIL', 'Impossibile contattare il server per invio OTP.', { email: LeadData.clientEmail });
-      appendBotInstant('UNABLE TO CONTACT SERVER. RETRY.');
+      appendBotInstant('IMPOSSIBILE CONTATTARE IL SERVER. RIPROVA.');
       unlockInput();
     }
   }
@@ -1286,11 +1436,11 @@
       const data = await callBackend({ action: 'VERIFY_OTP', email: LeadData.clientEmail, otp });
       if (data.verified === true) {
         updateStatusBar('verified');
-        appendBotInstant('AUTH SUCCESS: IDENTITY VERIFIED. PROTOCOL GRANTED.', 'sys-log-temp');
+        appendBotInstant('AUTENTICAZIONE SUCCESSO: IDENTITÀ VERIFICATA. PROTOCOLLO CONCESSO.', 'sys-log-temp');
         currentStep = 4;
         setTimeout(() => {
           document.querySelectorAll('.sys-log-temp').forEach(node => node.remove());
-          appendBotMessage('DEFINE OPERATIONAL AREA.\n(NOTE: The geographic parameter calibrates the project\'s communicative infrastructure, adapting language, tone, and cultural resonance to the target audience. The selected area also constrains the sizing of operational costs. Any linguistic exceptions can be defined in the textual brief.)', ['ITALY', 'EUROPE', 'EXTRA-EU']);
+          appendBotMessage('DEFINISCI AREA OPERATIVA.\n(NOTA: Il parametro geografico calibra la comunicazione e i costi. Eventuali eccezioni linguistiche devono essere definite nel brief.)', ['ITALY', 'EUROPE', 'EXTRA-EU']);
           unlockInput();
         }, 500);
       } else {
@@ -1300,37 +1450,38 @@
           triggerBanishment('MAX OTP RETRY EXCEEDED. IDENTITY UNVERIFIABLE.');
         } else {
           evalLog('EVAL_OTP_INVALID', 'OTP errato inserito.', { attempt: otpErrorCount });
-          appendBotInstant('INVALID OTP. ATTEMPT ' + otpErrorCount + '/3. RE-ENTER.');
+          appendBotInstant('OTP NON VALIDO. TENTATIVO ' + otpErrorCount + '/3. RE-INSERIRE.');
           unlockInput();
         }
       }
     } catch (e) {
       evalLog('EVAL_OTP_SEND_FAIL', 'Verifica OTP fallita per errore di rete.', { email: LeadData.clientEmail });
-      appendBotInstant('OTP VERIFICATION FAILED. RETRY.');
+      appendBotInstant('VERIFICA OTP FALLITA. RIPROVA.');
       unlockInput();
     }
   }
 
   async function callPingLink(url) {
-    appendBotInstant('CYBER-AUDIT IN PROGRESS: ' + url, 'sys-log-temp');
+    appendBotInstant('CYBER-AUDIT IN CORSO: ' + url, 'sys-log-temp');
     try {
       const data = await callBackend({ action: 'PING_LINK', url });
       if (data.isValid === true) {
         const bypassNote = data.bypass ? ' SOCIAL BYPASS: OK' : ' HTTP ' + (data.httpCode || '200');
-        appendBotInstant('PING: SOURCE VERIFIED.' + bypassNote + '.', 'sys-log-temp');
+        appendBotInstant('PING: SORGENTE VERIFICATA.' + bypassNote + '.', 'sys-log-temp');
         setTimeout(() => {
           document.querySelectorAll('.sys-log-temp').forEach(node => node.remove());
           currentStep = 1.3;
-          injectInputPrompt('PHONE CONTACT: (e.g. +39 333 123 4567)');
+          injectInputPrompt('PHONE CONTACT: (es. +39 333 123 4567)');
         }, 400);
       } else {
+        document.querySelectorAll('.sys-log-temp').forEach(node => node.remove());
         linkErrorCount++;
         if (linkErrorCount >= 2) {
           evalLog('EVAL_LINK_BANNED', 'Link non raggiungibile dopo 2 tentativi. Banishment.', { url: LeadData.socialLink });
           triggerBanishment('UNREACHABLE_SOURCE. DIGITAL IDENTITY UNVERIFIABLE. ACCESS DENIED.');
         } else {
           evalLog('EVAL_LINK_UNREACHABLE', 'Link non raggiungibile (1° tentativo).', { url: LeadData.socialLink });
-          appendBotInstant('UNREACHABLE_SOURCE. LAST ATTEMPT GRANTED. RE-ENTER VALID LINK.');
+          appendBotInstant('SORGENTE IRRAGGIUNGIBILE. CONCESSO ULTIMO TENTATIVO. RE-INSERIRE LINK VALIDO.', 'sys-log-temp');
           setTimeout(() => {
             autoDeployOracle(
               '<span style="color:#9DB97E;">PROACTIVE ASSIST:</span><br><br>' +
@@ -1339,15 +1490,23 @@
               '(es. <em>https://instagram.com/tuonome</em>).<br><br>' +
               'Correggi l\'input nella barra sottostante e riprova.'
             );
-            injectInputPrompt('WEBSITE/SOCIAL LINK: (e.g. https://instagram.com/yourbrand or www.yourwebsite.com)');
+            injectInputPrompt('WEBSITE/SOCIAL LINK: (es. www.skinnyspietato.com)');
           }, 600);
           unlockInput();
         }
       }
     } catch (e) {
-      evalLog('EVAL_LINK_UNREACHABLE', 'Ping link fallito per errore di rete.', { url: LeadData.socialLink });
-      appendBotInstant('PING FAILED. RE-ENTER LINK.');
-      unlockInput();
+      document.querySelectorAll('.sys-log-temp').forEach(node => node.remove());
+      linkErrorCount++;
+      if (linkErrorCount >= 2) {
+        evalLog('EVAL_LINK_BANNED', 'Ping link fallito dopo 2 tentativi (errore di rete). Banishment.', { url: LeadData.socialLink });
+        triggerBanishment('UNREACHABLE_SOURCE. DIGITAL IDENTITY UNVERIFIABLE. ACCESS DENIED.');
+      } else {
+        evalLog('EVAL_LINK_UNREACHABLE', 'Ping link fallito per errore di rete (1° tentativo).', { url: LeadData.socialLink });
+        appendBotInstant('SORGENTE IRRAGGIUNGIBILE. CONCESSO ULTIMO TENTATIVO. RE-INSERIRE LINK VALIDO.', 'sys-log-temp');
+        injectInputPrompt('WEBSITE/SOCIAL LINK: (es. www.skinnyspietato.com)');
+        unlockInput();
+      }
     }
   }
 
@@ -1449,7 +1608,7 @@
             let countdown = 30;
             oracleBtn.style.fontSize = '12px';
             oracleBtn.innerHTML = `${countdown}s`;
-            appendBotInstant("USER ACCESS TO ORACLE RESTRICTED DUE TO PROTOCOL VIOLATION. WAIT FOR RE-CALIBRATION.");
+            appendBotInstant("ACCESSO UTENTE ALL'ORACOLO LIMITATO PER VIOLAZIONE DEL PROTOCOLLO. ATTENDERE RI-CALIBRAZIONE.");
             const lockInterval = setInterval(() => {
               countdown--;
               if (countdown > 0) {
@@ -1483,7 +1642,7 @@
       if (data.status === 'error') {
         if (data.message === 'OVERLOAD') {
           evalLog('EVAL_AI_OVERLOAD', 'Modulo evaluation sovraccarico. Retry richiesto.');
-          appendBotInstant('EVALUATION MODULE OVERLOADED. RETRY IN 60 SECONDS.');
+          appendBotInstant('MODULO DI VALUTAZIONE SOVRACCARICO. RIPROVA TRA 60 SECONDI.');
           currentStep = 7;
           unlockInput();
           return;
@@ -1494,7 +1653,7 @@
       }
       const verdict = data.verdict || {};
       if (verdict.is_banned === true) {
-        appendBotInstant('EVALUATION: REJECTED.');
+        appendBotInstant('VALUTAZIONE: RESPINTA.');
         const rejectionReason = verdict.error_code || 'UNKNOWN';
         evalLog('EVAL_BANISHMENT', 'Lead bannato dalla valutazione AI.', { reason: rejectionReason, clientType: LeadData.clientType });
         LeadData.chatLog = sysChatTranscript.join('\n');
@@ -1505,7 +1664,7 @@
       }
     } catch (e) {
       evalLog('EVAL_AI_NETWORK_FAIL', 'callGeminiEvaluate fallito per errore di rete: ' + e.toString().substring(0,100));
-      appendBotInstant('UNABLE TO COMPLETE EVALUATION. CONTACT VIA EMAIL.');
+      appendBotInstant('IMPOSSIBILE COMPLETARE LA VALUTAZIONE. CONTATTARE TRAMITE EMAIL.');
     }
   }
 
@@ -1590,11 +1749,11 @@
         showFinalModal(true);
       } else {
         evalLog('EVAL_SAVE_FAIL', 'SAVE_TO_SHEET ha restituito status non valido: ' + JSON.stringify(response).substring(0,100));
-        appendBotInstant('DATA SAVE FAILED. CONTACT SUPPORT.');
+        appendBotInstant('SALVATAGGIO DATI FALLITO. CONTATTARE IL SUPPORTO.');
       }
     } catch (e) {
       evalLog('EVAL_SAVE_FAIL', 'approvedSequence fallito per errore di rete: ' + e.toString().substring(0,100));
-      appendBotInstant('DATA TRANSMISSION FAILED.');
+      appendBotInstant('TRASMISSIONE DATI FALLITA.');
     }
   }
 
@@ -1620,7 +1779,7 @@
         continue;
       }
       if (pendingFiles.length >= 10) {
-        appendBotInstant('MAXIMUM 10 FILES ALLOWED.', 'sys-log-temp');
+        appendBotInstant('MASSIMO 10 FILE CONSENTITI.', 'sys-log-temp');
         setTimeout(() => document.querySelectorAll('.sys-log-temp').forEach(n => n.remove()), 2500);
         break;
       }

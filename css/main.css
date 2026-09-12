@@ -501,10 +501,6 @@ img, video {
     box-shadow: 0 0 8px 2px rgba(157, 185, 126, 0.50);
 }
 
-.sys-spotify-widget {
-    margin-top: 3px; /* Centratura fine su Desktop - aggiustato per essere perfettamente al centro */
-}
-
 .sys-access-bar__status-text {
     font-family:    var(--font-mono);
     font-size:      0.6875rem; /* 11px */
@@ -553,6 +549,59 @@ img, video {
     content:      '|';
     margin-right: 0.75rem;
     opacity:      0.3;
+}
+
+/* — AI Badge & Popup — */
+.sys-ai-badge-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.sys-ai-badge-container + .sys-access-bar__meta-item::before {
+    content:      '|';
+    margin-right: 0.75rem;
+    opacity:      0.3;
+}
+
+#sys-ai-badge {
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 0;
+    transition: color var(--anim-smooth);
+}
+#sys-ai-badge:hover, #sys-ai-badge.active {
+    color: var(--text-primary);
+}
+
+.sys-ai-popup {
+    position: absolute;
+    top: calc(100% + 6px); /* Spostato più in su */
+    left: 50%;
+    width: 200px; /* Margini più stretti */
+    background: var(--sys-glass-bg);
+    backdrop-filter: var(--sys-glass-blur);
+    -webkit-backdrop-filter: var(--sys-glass-blur);
+    border: var(--sys-border-light);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    padding: 1rem 1rem; /* Margini interni ridotti */
+    color: var(--text-primary);
+    font-size: 0.6rem;
+    line-height: 1.6;
+    text-align: center;
+    text-transform: none;
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity var(--anim-smooth), transform var(--anim-smooth), visibility var(--anim-smooth);
+    z-index: 1000;
+}
+.sys-ai-popup.open {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: translate(-50%, 0) !important;
 }
 
 /* ==========================================================================
@@ -629,40 +678,6 @@ img, video {
         font-size: 0.65rem;
     }
 
-    .sys-spotify-widget {
-        position: absolute !important;
-        right: 6px !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important;
-        left: auto !important;
-        margin-left: 0;
-        margin-top: 0;
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-    }
-
-    .sys-spotify-btn {
-        font-size: 0.45rem !important;
-        padding: 4px 8px !important;
-        white-space: nowrap;
-    }
-
-    #spotify-player-container {
-        height: 32px !important;
-        width: 120px !important;
-        position: relative;
-        transform: none;
-        margin-top: 0;
-    }
-
-    #spotify-player-container iframe {
-        transform: scale(0.4);
-        transform-origin: top left;
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
 }
 
 /* ==========================================================================

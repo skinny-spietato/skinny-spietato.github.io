@@ -127,7 +127,7 @@ body[data-page="evaluation"] {
     background: transparent !important;
     border: none !important;
     color: var(--text-primary) !important; /* Active Typing Sync (Bianco Puro) */
-    font-family: var(--font-mono);
+    font-family: var(--font-ui);
     font-size: var(--font-base-size);
     padding: 0.35rem 0.75rem;
     margin-bottom: 0.15rem;
@@ -292,7 +292,7 @@ body[data-page="evaluation"] {
     color: var(--text-primary);
     padding: 6px 14px;
     border-radius: 20px;
-    font-family: var(--font-mono);
+    font-family: var(--font-ui);
     font-size: 0.75rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -307,16 +307,11 @@ body[data-page="evaluation"] {
     /* Materiale e Colore - Alpha a 0.6, ma isolato dal fondo */
     background-color: rgba(157, 185, 126, 0.6) !important;
     
-    /* Forza il reset del blur per evitare blending anomali col vetro sottostante */
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    
     /* Bordo luce identico alla bolla utente */
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     
     /* Tipografia sparata al bianco ottico come la bolla */
     color: #ffffff !important;
-    font-weight: 500 !important; /* Leggero boost per pareggiare la leggibilità */
     
     /* Ombra di stacco per non fonderlo con la bolla antracite del bot */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
@@ -338,8 +333,6 @@ body[data-page="evaluation"] {
 /* Selezione attiva (UI_RECOVERY_PROTOCOL) */
 .sys-smart-reply.active-selection {
     background-color: rgba(157, 185, 126, 0.75) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
     color: #ffffff !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
@@ -783,4 +776,89 @@ body[data-page="evaluation"] {
         min-width: 180px !important; /* Compressione spaziale asse X */
         height: 150px !important; /* Compressione spaziale asse Y */
     }
+    }
+}
+
+
+
+.sys-cinematic-modal {
+    background-color: rgba(0, 0, 0, 0.95);
+    padding: 2.5rem;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    font-family: var(--font-ui);
+    color: #ffffff;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: 0.2s;
+}
+
+.sys-cinematic-modal.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.sys-cinematic-modal h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+}
+
+.sys-cinematic-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.sys-cinematic-btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+    font-family: var(--font-ui);
+}
+
+.sys-cinematic-btn--connect {
+    background: #1DB954;
+    color: white;
+}
+
+.sys-cinematic-btn--connect:hover {
+    background: #1ed760;
+}
+
+.sys-cinematic-btn--skip {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.sys-cinematic-btn--skip:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.sys-cinematic-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    object-fit: cover;
+    z-index: 100000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.sys-cinematic-video.active {
+    opacity: 1;
+    pointer-events: auto;
 }

@@ -19,3 +19,7 @@ APPSCRIPT/
 # New deploy materials folder
 SHOP/
 
+
+# Ignored working directories
+AGGIORNAMENTO/
+ITEMS/

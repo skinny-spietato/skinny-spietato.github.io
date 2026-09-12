@@ -8,6 +8,10 @@
   <link rel="apple-touch-icon" href="logo-pwa.svg">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="admin.css">
+
+    <!-- Anti-Clickjacking (Frame Busting) -->
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script src="../js/frame-buster.js"></script>
 </head>
 <body>
 
@@ -170,6 +174,7 @@
     </main>
 
   </div>
+
 
   <!-- VIEW: NEWSLETTER (SLIDE 2) -->
   <div id="area-newsletter" class="sys-matrix-slide">
@@ -367,6 +372,7 @@
         </div>
       </div>
     </main>
+    
   </div>
 
   <!-- VIEW: REPORT ERRORI (SLIDE 5) -->
@@ -433,6 +439,11 @@
       </div>
 
       <div class="input-group">
+        <label>Timeline Richiesta (Hint)</label>
+        <div id="prop-hint-timeline" style="font-family: var(--font-mono); font-size: 11px; color: var(--sys-trigger-active); background: rgba(157, 185, 126, 0.1); padding: 8px 12px; border-radius: 4px; border: 1px solid rgba(157, 185, 126, 0.3);">Nessuna preferenza</div>
+      </div>
+
+      <div class="input-group">
         <label for="input-days-arch">Giorni Architettura</label>
         <input type="number" id="input-days-arch" min="0" placeholder="Es. 3">
       </div>
@@ -472,6 +483,25 @@
             <option value="50">50% — ACCONTO STANDARD</option>
             <option value="75">75% — ACCONTO ESTESO</option>
             <option value="100">100% — SALDO ANTICIPATO COMPLETO</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- DISCOUNT OVERRIDE BLOCK -->
+      <div class="financial-override-block" style="margin-top: 15px;">
+        <div class="fin-calc-row">
+          <span class="fin-label">SCONTO APPLICATO</span>
+          <span id="fin-discount-display">0% — NESSUN SCONTO</span>
+        </div>
+        <div class="input-group" style="margin: 0;">
+          <label for="override-sconto">CONFIGURA SCONTO PROMOZIONALE</label>
+          <select id="override-sconto">
+            <option value="0">0% — NESSUN SCONTO</option>
+            <option value="5">5% — SCONTO BASE</option>
+            <option value="10">10% — SCONTO BRONZE</option>
+            <option value="15">15% — SCONTO SILVER</option>
+            <option value="20">20% — SCONTO GOLD</option>
+            <option value="25">25% — SCONTO PLATINUM</option>
           </select>
         </div>
       </div>
@@ -646,7 +676,7 @@
         </div>
         
         <div class="inspect-section">
-          <div class="inspect-section-header"><span>BRIEF UTENTE / GOALS</span><span class="inspect-toggle-icon">+</span></div>
+          <div class="inspect-section-header"><span>BRIEF / STILE / TIMELINE</span><span class="inspect-toggle-icon">+</span></div>
           <div class="inspect-section-body" style="display: none;">
             <div id="inspect-brief" class="inspect-value">N/A</div>
           </div>
@@ -676,6 +706,8 @@
     </div>
   </div>
 
+
+
   <!-- CUSTOM ALERT OVERLAY (Mod 3C) -->
   <div id="sys-custom-alert">
     <div class="sys-alert-box">
@@ -694,8 +726,11 @@
   <div id="sys-toast-container"></div>
 
   <!-- PDF ENGINE (jsPDF + AutoTable) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" integrity="sha384-fCAW/rDWORTbQXSiB7mOg0QtQ5c+r0f544y6XoKjuVva0nMBlCpNUjiFeG5iMdS3" crossorigin="anonymous"></script>
+
+  <!-- XSS PREVENTION (DOMPurify) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js" integrity="sha384-H+rK//Q6PhqjFtdS/Ujw/8p3iR46/4uB18F9P8WqZ4U0y9O3EOWD9XvLwTzZlY8r" crossorigin="anonymous"></script>
 
   <!-- SYSTEM KERNEL -->
   <script src="admin.js"></script>

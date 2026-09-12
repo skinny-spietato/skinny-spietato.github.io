@@ -22,9 +22,18 @@
 
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/evaluation.css">
+
+    <!-- Leaflet.js CDN — Mappa Geospaziale -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 
     <!-- Global State Script -->
     <script src="js/access-state.js"></script>
+
+    <!-- Anti-Clickjacking (Frame Busting) -->
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script src="js/frame-buster.js"></script>
 </head>
 
 <body data-page="home">
@@ -67,8 +76,14 @@
         </div>
 
         <div class="sys-access-bar__meta" aria-hidden="true">
+            <div class="sys-ai-badge-container">
+                <button id="sys-ai-badge" class="sys-access-bar__meta-item font-mono" aria-label="Informazioni AI">ASSISTED BY AI</button>
+                <div id="sys-ai-popup" class="sys-ai-popup font-mono" style="visibility: hidden; opacity: 0; transform: translate(-50%, -10px);">
+                    <p id="sys-ai-popup-text">Il sistema integra l'utilizzo dell'AI per assistenza in chat, valutazione interazioni e generazione testi.</p>
+                </div>
+            </div>
             <span class="sys-access-bar__meta-item font-mono">NODE_SS_BETA</span>
-            <span class="sys-access-bar__meta-item font-mono">V0.0.1</span>
+            <span class="sys-access-bar__meta-item font-mono">V0.0.2</span>
         </div>
     </header>
 
@@ -83,16 +98,59 @@
                 <span class="sys-declaration__title-sub">Design &amp; Visual Systems</span>
             </h1>
 
-            <p class="sys-declaration__body">
-                Technical unit for 2D/3D prototyping and visual engineering.<br>
-                Integrated production: physical printing and AI-driven asset generation.<br>
-                Activation upon preventive evaluation.
-            </p>
+            <div id="sys-declaration-content">
+                <p class="sys-declaration__body" id="sys-declaration-text">
+                    Unità tecnica per la prototipazione 2D/3D e l'ingegneria visiva.<br>
+                    Produzione integrata, stampa fisica e generazione di asset tramite AI.<br>
+                    Attivazione previa valutazione preventiva.
+                </p>
+
+                <ul class="sys-ghost-state" aria-label="System Rules" id="sys-ghost-rules" style="display: none; position: relative; transform: none; top: auto; left: auto; padding: 0; max-width: 100%; gap: 0.4rem; margin-bottom: 1.5rem;">
+                    <li class="sys-ghost-state__item">
+                        <div class="sys-ghost-state__text" style="text-align: center;">
+                            <span class="sys-ghost-state__title font-mono" style="display: inline; margin-bottom: 0; margin-right: 0.25rem;">[01. LEGAL]</span> processing based on pre-contractual measures (GDPR).
+                        </div>
+                    </li>
+                    <li class="sys-ghost-state__item">
+                        <div class="sys-ghost-state__text" style="text-align: center;">
+                            <span class="sys-ghost-state__title font-mono" style="display: inline; margin-bottom: 0; margin-right: 0.25rem;">[02. SYSTEM]</span> no commercial cookies. automated scope & budget screening.
+                        </div>
+                    </li>
+                    <li class="sys-ghost-state__item">
+                        <div class="sys-ghost-state__text" style="text-align: center;">
+                            <span class="sys-ghost-state__title font-mono" style="display: inline; margin-bottom: 0; margin-right: 0.25rem;">[03. RIGHTS]</span> rejected records purged. full rights via system admin.
+                        </div>
+                    </li>
+                </ul>
+
+                <div style="display: flex; justify-content: center; margin-top: 1.5rem; margin-bottom: 0.5rem; pointer-events: auto;">
+                    <button id="btn-full-privacy" class="font-mono" style="background: transparent; border: none; padding: 0; font-size: 0.5rem; color: var(--text-secondary); opacity: 0.5; cursor: pointer; pointer-events: auto; letter-spacing: 0.1em; transition: all 0.3s ease;">[FULL PRIVACY POLICY]</button>
+                </div>
+            </div>
+
+            <!-- TERMINAL CANVAS -->
+            <div id="sys-chat-canvas" class="sys-chat-canvas" style="display: none; width: 100%; max-width: 800px; margin: 0 auto; flex-direction: column; flex: 1;"></div>
 
             <div class="sys-declaration__actions" role="group" aria-label="System actions">
-                <a href="evaluation.html" class="cta cta-primary" id="btn-evaluation">
+                <a href="#" class="cta cta-primary" id="btn-evaluation">
                     START PREVENTIVE EVALUATION
                 </a>
+                
+                <div class="sys-chat-input-wrapper glass-diffuse sys-intent-start" id="sys-chat-input-container" style="display: none; width: 100%; max-width: 400px; margin: 0 auto; align-items: center;">
+                    <textarea
+                        class="sys-chat-input"
+                        id="sys-chat-input"
+                        placeholder="Awaiting input..."
+                        rows="1"
+                        aria-label="Terminal input"
+                        style="margin-bottom: 0; padding-top: 8px; padding-bottom: 8px; line-height: 20px; height: 36px; box-sizing: border-box; overflow: hidden;"
+                    >Start Preventive Evalutation</textarea>
+                    <button class="sys-chat-send" id="sys-chat-send" aria-label="Invia messaggio">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 20L12 4M12 4L6 10M12 4L18 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
                 <!-- ==========================================
                      ACTIVE SYSTEMS PREVIEW DECK [PHASE 1]
                      ========================================== -->
@@ -102,7 +160,7 @@
                         <!-- === SET 1 (Nodi Primari) === -->
                         <a href="sistemi-attivi.html#case-01" class="sys-micro-card">
                             <h3 class="micro-title">BLACK SHEEP X 11CLUBROOM</h3>
-                            <p class="micro-text">The Black Sheep x 11Clubroom project operates within a nightlife context defined by strong urban and community identity, designed for clubbing environments where the visual experience is central. The primary visual communication element consists of immersive LED walls engineered to deliver spatial continuity and aesthetic coherence, transforming the venue into an integrated and recognizable visual system.</p>
+                            <p class="micro-text">Il progetto Black Sheep x 11Clubroom opera in un contesto di vita notturna definito da una forte identità urbana e comunitaria, progettato per ambienti di clubbing dove l'esperienza visiva è centrale. L'elemento primario di comunicazione visiva è costituito da LED wall immersivi ingegnerizzati per offrire continuità spaziale e coerenza estetica, trasformando il locale in un sistema visivo integrato e riconoscibile.</p>
                             <div class="micro-assets">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/BLACKSHEEPX11CLUBROOM/RENDERMASCOTREDMAIN.jpeg" loading="lazy" alt="Asset 1">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/BLACKSHEEPX11CLUBROOM/PREVIEWLEDWALL.jpeg" loading="lazy" alt="Asset 2">
@@ -111,7 +169,7 @@
 
                         <a href="sistemi-attivi.html#case-04" class="sys-micro-card">
                             <h3 class="micro-title">BLACK SHEEP X HEARTLESS X BEKIND X APOLLO</h3>
-                            <p class="micro-text">Black Sheep hosted a two-day collaborative event structure on May 1st and 2nd at Apollo Milano. The objective was to produce a coherent series of digital promotional assets capable of presenting the multi-format event with high visual clarity while maintaining the core structural recognition of the host brand.</p>
+                            <p class="micro-text">Black Sheep ha ospitato una struttura per eventi collaborativi di due giorni il 1° e il 2 maggio presso l'Apollo Milano. L'obiettivo era produrre una serie coerente di risorse promozionali digitali in grado di presentare l'evento multi-formato con elevata chiarezza visiva pur mantenendo il riconoscimento strutturale di base del marchio ospitante.</p>
                             <div class="micro-assets">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/BLACKSHEEPXHEARTLESSXBEKINDXAPOLLO/FLYERRED.jpeg" loading="lazy" alt="Asset 1">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/BLACKSHEEPXHEARTLESSXBEKINDXAPOLLO/FLYERBLU.jpeg" loading="lazy" alt="Asset 2">
@@ -120,7 +178,7 @@
 
                         <a href="sistemi-attivi.html#case-03" class="sys-micro-card">
                             <h3 class="micro-title">FATAL BLOOM BY MANTIS</h3>
-                            <p class="micro-text">This project focuses on the development of the mini collection Fatal Bloom. The objective was to build a collection capable of generating multiple configurations through the physical interaction between garments while maintaining a coherent technical framework and an industrial visual language.</p>
+                            <p class="micro-text">Questo progetto si concentra sullo sviluppo della mini collezione Fatal Bloom. L'obiettivo era costruire una collezione in grado di generare molteplici configurazioni attraverso l'interazione fisica tra i capi pur mantenendo una struttura tecnica coerente e un linguaggio visivo industriale.</p>
                             <div class="micro-assets">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/FATALBLOOMBYMANTIS/UNO.jpeg" loading="lazy" alt="Asset 1">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/FATALBLOOMBYMANTIS/DUE.jpeg" loading="lazy" alt="Asset 2">
@@ -129,7 +187,7 @@
 
                         <a href="sistemi-attivi.html#case-02" class="sys-micro-card">
                             <h3 class="micro-title">AEEZUS ANKH — TRUCKER HAT</h3>
-                            <p class="micro-text">Aeezus Ankh introduced a limited collection of five hats. The objective was to produce a series of digital assets capable of presenting the products with a high level of visual clarity and realism, highlighting material quality, design details, and stylistic identity across digital platforms.</p>
+                            <p class="micro-text">Aeezus Ankh ha introdotto una collezione limitata di cinque cappelli. L'obiettivo era produrre una serie di asset digitali in grado di presentare i prodotti con un alto livello di chiarezza visiva e realismo, evidenziando la qualità dei materiali, i dettagli di design e l'identità stilistica su piattaforme digitali.</p>
                             <div class="micro-assets">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/AEEZUSANKH-TRUCKERHAT/RENDERCAPPELLINERI.jpeg" loading="lazy" alt="Asset 1">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/AEEZUSANKH-TRUCKERHAT/RENDERBOXCAPPELLI.jpeg" loading="lazy" alt="Asset 2">
@@ -139,7 +197,7 @@
                         <!-- === SET 2 (Clone Ghost per Loop Infinito) === -->
                         <a href="sistemi-attivi.html#case-01" class="sys-micro-card" aria-hidden="true">
                             <h3 class="micro-title">BLACK SHEEP X 11CLUBROOM</h3>
-                            <p class="micro-text">The Black Sheep x 11Clubroom project operates within a nightlife context defined by strong urban and community identity, designed for clubbing environments where the visual experience is central. The primary visual communication element consists of immersive LED walls engineered to deliver spatial continuity and aesthetic coherence, transforming the venue into an integrated and recognizable visual system.</p>
+                            <p class="micro-text">Il progetto Black Sheep x 11Clubroom opera in un contesto di vita notturna definito da una forte identità urbana e comunitaria, progettato per ambienti di clubbing dove l'esperienza visiva è centrale. L'elemento primario di comunicazione visiva è costituito da LED wall immersivi ingegnerizzati per offrire continuità spaziale e coerenza estetica, trasformando il locale in un sistema visivo integrato e riconoscibile.</p>
                             <div class="micro-assets">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/BLACKSHEEPX11CLUBROOM/RENDERMASCOTREDMAIN.jpeg" loading="lazy" alt="Asset 1">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/BLACKSHEEPX11CLUBROOM/PREVIEWLEDWALL.jpeg" loading="lazy" alt="Asset 2">
@@ -148,7 +206,7 @@
 
                         <a href="sistemi-attivi.html#case-04" class="sys-micro-card" aria-hidden="true">
                             <h3 class="micro-title">BLACK SHEEP X HEARTLESS X BEKIND X APOLLO</h3>
-                            <p class="micro-text">Black Sheep hosted a two-day collaborative event structure on May 1st and 2nd at Apollo Milano. The objective was to produce a coherent series of digital promotional assets capable of presenting the multi-format event with high visual clarity while maintaining the core structural recognition of the host brand.</p>
+                            <p class="micro-text">Black Sheep ha ospitato una struttura per eventi collaborativi di due giorni il 1° e il 2 maggio presso l'Apollo Milano. L'obiettivo era produrre una serie coerente di risorse promozionali digitali in grado di presentare l'evento multi-formato con elevata chiarezza visiva pur mantenendo il riconoscimento strutturale di base del marchio ospitante.</p>
                             <div class="micro-assets">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/BLACKSHEEPXHEARTLESSXBEKINDXAPOLLO/FLYERRED.jpeg" loading="lazy" alt="Asset 1">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/BLACKSHEEPXHEARTLESSXBEKINDXAPOLLO/FLYERBLU.jpeg" loading="lazy" alt="Asset 2">
@@ -157,7 +215,7 @@
 
                         <a href="sistemi-attivi.html#case-03" class="sys-micro-card" aria-hidden="true">
                             <h3 class="micro-title">FATAL BLOOM BY MANTIS</h3>
-                            <p class="micro-text">This project focuses on the development of the mini collection Fatal Bloom. The objective was to build a collection capable of generating multiple configurations through the physical interaction between garments while maintaining a coherent technical framework and an industrial visual language.</p>
+                            <p class="micro-text">Questo progetto si concentra sullo sviluppo della mini collezione Fatal Bloom. L'obiettivo era costruire una collezione in grado di generare molteplici configurazioni attraverso l'interazione fisica tra i capi pur mantenendo una struttura tecnica coerente e un linguaggio visivo industriale.</p>
                             <div class="micro-assets">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/FATALBLOOMBYMANTIS/UNO.jpeg" loading="lazy" alt="Asset 1">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/FATALBLOOMBYMANTIS/DUE.jpeg" loading="lazy" alt="Asset 2">
@@ -166,7 +224,7 @@
 
                         <a href="sistemi-attivi.html#case-02" class="sys-micro-card" aria-hidden="true">
                             <h3 class="micro-title">AEEZUS ANKH — TRUCKER HAT</h3>
-                            <p class="micro-text">Aeezus Ankh introduced a limited collection of five hats. The objective was to produce a series of digital assets capable of presenting the products with a high level of visual clarity and realism, highlighting material quality, design details, and stylistic identity across digital platforms.</p>
+                            <p class="micro-text">Aeezus Ankh ha introdotto una collezione limitata di cinque cappelli. L'obiettivo era produrre una serie di asset digitali in grado di presentare i prodotti con un alto livello di chiarezza visiva e realismo, evidenziando la qualità dei materiali, i dettagli di design e l'identità stilistica su piattaforme digitali.</p>
                             <div class="micro-assets">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/AEEZUSANKH-TRUCKERHAT/RENDERCAPPELLINERI.jpeg" loading="lazy" alt="Asset 1">
                                 <img src="IMMAGINI/ACTIVESYSTEMS/AEEZUSANKH-TRUCKERHAT/RENDERBOXCAPPELLI.jpeg" loading="lazy" alt="Asset 2">
@@ -180,65 +238,7 @@
         </div>
     </main>
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         [03] OPERATING METHOD — Panel fisso in basso, fuori viewport
-         Meccanica: translateY(100%) → translateY(0) via swipe UP 40% VH
-         Altezza: 60vh esatto. overflow: hidden. No scroll interno.
-    ═══════════════════════════════════════════════════════════════════════ -->
-    <div
-        class="sys-method glass-diffuse"
-        id="sys-method-panel"
-        aria-label="Operating Method"
-        aria-hidden="true"
-    >
-        <div class="method-inner">
-
-            <h2 class="method-title">OPERATING METHOD</h2>
-
-            <p class="method-intro font-doc">
-                System access requires design clarity, defined vision, and verified financial allocation.
-                Only pre-qualified instances proceed to architecture and subsequent production.
-            </p>
-
-            <ol class="method-list" role="list">
-                <li class="method-item">
-                    <span class="method-num font-mono">01 — Analysis</span>
-                    <p class="method-desc font-doc">
-                        Instance reception. Purely technical validation of the brief.
-                        Calculation of operational sustainability, structural integrity
-                        of the provided data, and timeline definition.
-                    </p>
-                </li>
-                <li class="method-item">
-                    <span class="method-num font-mono">02 — Architecture</span>
-                    <p class="method-desc font-doc">
-                        Development of the design skeleton. Definition of the general
-                        visual system and format hierarchies. Guarantee of mathematical
-                        multi-output consistency.
-                    </p>
-                </li>
-                <li class="method-item">
-                    <span class="method-num font-mono">03 — Production</span>
-                    <p class="method-desc font-doc">
-                        Practical execution. Development of specific 2D, 3D, and
-                        AI-generated assets strictly within the physical and temporal
-                        parameters defined in step 02.
-                    </p>
-                </li>
-                <li class="method-item">
-                    <span class="method-num font-mono">04 — Implementation</span>
-                    <p class="method-desc font-doc">
-                        Cycle completion. Deep optimization of source files and data
-                        export. Exclusive release of pre-agreed final formats.
-                        The system closes.
-                    </p>
-                </li>
-            </ol>
-
-        </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
+        <!-- ═══════════════════════════════════════════════════════════════════
          [04] BOTTOM ACTIONS — Contatti
          Meccanica bozza: opacity 0 → 1 via swipe DOWN 40% VH
          Posizione: fixed, bottom 2rem, centrato.
@@ -253,7 +253,253 @@
         <a href="mailto:info.skinnyspietato@gmail.com" class="cta cta-secondary" id="btn-mail">MAIL</a>
     </div>
 
+    <div id="sys-privacy-modal" class="sys-privacy-backdrop" aria-hidden="true" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 20000; background: rgba(0,0,0,0.2); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+        <div class="sys-privacy-panel font-mono">
+            <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 0.5rem;">
+                <button id="btn-close-privacy" style="background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; padding: 0; transition: color 0.3s ease;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">&times;</button>
+            </div>
+            <div class="sys-privacy-content">
+                <p><strong style="color: var(--sys-text-primary);">[01. DATA CONTROLLER]</strong><br>L'architetto e amministratore di sistema di SITOSS. Contatti centralizzati e notifiche gestite esclusivamente attraverso i nodi di estrazione del dominio. Email di Contatto per Richieste Privacy: INFO.SKINNYSPIETATO@GMAIL.COM</p>
+                <p><strong style="color: var(--sys-text-primary);">[02. LEGAL BASIS FOR PROCESSING]</strong><br>L'immissione e il trattamento dei flussi informativi all'interno di questo terminale sono soggetti all'esecuzione di misure precontrattuali (Art. 6.1.b GDPR) e al legittimo interesse del Titolare del Trattamento (Art. 6.1.f GDPR) nella protezione delle infrastrutture cloud serverless da vettori bot o intenti non commerciali.</p>
+                <p><strong style="color: var(--sys-text-primary);">[03. COOKIE ARCHITECTURE AND LOCAL IDENTIFIERS]</strong><br>Il sistema non implementa cookie di profilazione commerciale o pixel di terze parti (Meta, Google Analytics). L'ambiente si affida esclusivamente a identificatori tecnici isolati di prima parte:<br>
+                * Local Storage -> Retention of global operational states (verification, request, verified, allowed, punished).<br>
+                * Temporary Storage -> Secure retention (600s) of the OTP token tied to the user's email address.<br>
+                Il consenso preventivo tramite banner non è richiesto in quanto si tratta di vettori strettamente necessari per l'erogazione logica dell'interfaccia.</p>
+                <p><strong style="color: var(--sys-text-primary);">[04. SCOPE OF PROCESSING AND DUAL-TIER PROFILING]</strong><br>I flussi di testo generati, i metadati geografici estratti tramite meccanismi di geofencing e i flussi binari in Base64 caricati nella Staging Area vengono analizzati da una pipeline di backend integrata e cluster LLM esterni. I dati trasferiti a provider LLM esterni al di fuori dell'UE sono protetti dalle Clausole Contrattuali Standard (SCC).</p>
+                <p><strong style="color: var(--sys-text-primary);">[05. PUNITIVE LOGIC AND AUTOMATED DECISION-MAKING PROCESSES (ART. 22 GDPR)]</strong><br>Il modulo software 'The Analyst' esegue uno screening automatizzato incrociando Scopo e Budget. Le richieste non allineate con i parametri minimi (es., BUDGET_TOO_LOW) o prive di intento commerciale (CV, ingegneria inversa) comportano l'immediata e permanente esclusione dell'istanza, archiviata nel registro isolato 'SAVE_REJECTED'. Il tentativo di interruzione fraudolenta del flusso di input innesca il 'Protocollo di Punizione' con un blocco temporaneo coercitivo dell'interfaccia.</p>
+                <p><strong style="color: var(--sys-text-primary);">[06. RETENTION PERIOD (MINIMIZATION)]</strong><br>I dati dei lead convalidati e ammessi restano impressi nel database 'REQUESTS' per un massimo di 24 mesi per il follow-up commerciale. I record allocati nel registro di scarto 'SAVE_REJECTED' sono soggetti a periodici protocolli distruttivi di autopulizia termica ogni 30 giorni.</p>
+                <p><strong style="color: var(--sys-text-primary);">[07. DATA SUBJECT RIGHTS (ART. 15-21 GDPR)]</strong><br>L'utente conserva il diritto di richiedere l'intervento umano e la revisione delle decisioni automatizzate. Inoltre, gli utenti hanno il diritto di richiedere l'accesso, la rettifica, la cancellazione (diritto all'oblio), la limitazione del trattamento e la portabilità dei dati. Le richieste possono essere inoltrate all'amministratore di sistema tramite l'email sulla privacy fornita. Gli utenti hanno anche il diritto di proporre reclamo all'Autorità di Controllo Nazionale.</p>
+                <p><strong style="color: var(--sys-text-primary);">[08. DIGITAL PRODUCTS & WAIVER OF WITHDRAWAL RIGHT]</strong><br>Acquistando asset digitali attraverso il sistema, l'utente prende atto e accetta che la fornitura riguarda contenuti digitali non forniti su un supporto materiale. L'utente acconsente espressamente all'esecuzione immediata del contratto e riconosce la conseguente perdita del diritto di recesso al momento della consegna dei file digitali, in conformità con le leggi vigenti a tutela dei consumatori.</p>
+                <p><strong style="color: var(--sys-text-primary);">[09. ARTIFICIAL INTELLIGENCE INTEGRATION]</strong><br>Il presente terminale si avvale di sistemi di Intelligenza Artificiale per assistere gli utenti tramite chat, valutare l'idoneità delle richieste e generare risposte. Interagendo con la Chat o l'Oracolo, l'utente è consapevole di relazionarsi con un sistema automatizzato e non umano. I dati inseriti vengono processati come indicato alla sezione [04].</p>
+            </div>
+        </div>
+    </div>
+
     <script src="js/home.js" defer></script>
+    <script src="js/evaluation.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Privacy Modal Logic
+            const btnOpen = document.getElementById('btn-full-privacy');
+            const btnClose = document.getElementById('btn-close-privacy');
+            const modal = document.getElementById('sys-privacy-modal');
+            const panel = modal ? modal.querySelector('.sys-privacy-panel') : null;
+
+            if(btnOpen && modal && btnClose && panel) {
+                btnOpen.addEventListener('click', () => {
+                    modal.style.display = 'flex';
+                    void modal.offsetWidth; // force reflow
+                    modal.style.opacity = '1';
+                    panel.style.transform = 'translateY(0)';
+                });
+
+                const closeModal = () => {
+                    modal.style.opacity = '0';
+                    panel.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                    }, 300);
+                };
+
+                btnClose.addEventListener('click', closeModal);
+                modal.addEventListener('click', (e) => {
+                    if(e.target === modal) closeModal();
+                });
+                
+                btnOpen.addEventListener('mouseenter', () => {
+                    btnOpen.style.opacity = '1';
+                    btnOpen.style.color = 'var(--text-primary)';
+                });
+                btnOpen.addEventListener('mouseleave', () => {
+                    btnOpen.style.opacity = '0.5';
+                    btnOpen.style.color = 'var(--text-secondary)';
+                });
+            }
+
+            // Transformation Logic
+            const btnEvaluation = document.getElementById('btn-evaluation');
+            const declarationText = document.getElementById('sys-declaration-text');
+            const ghostRules = document.getElementById('sys-ghost-rules');
+            const chatInputContainer = document.getElementById('sys-chat-input-container');
+            const chatInput = document.getElementById('sys-chat-input');
+            const chatSendBtn = document.getElementById('sys-chat-send');
+
+            if (btnEvaluation && declarationText && ghostRules && chatInputContainer) {
+                btnEvaluation.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Hide intro text, show ghost rules
+                    declarationText.style.display = 'none';
+                    ghostRules.style.display = 'flex';
+                    
+                    // Hide evaluation button, show input bar
+                    btnEvaluation.style.display = 'none';
+                    chatInputContainer.style.display = 'flex';
+                    
+                    // Optional: auto-focus the input
+                    if (chatInput) chatInput.focus();
+                });
+            }
+
+            const startChatLayout = () => {
+                document.body.setAttribute('data-page', 'evaluation');
+                
+                const chatInputContainer = document.getElementById('sys-chat-input-container');
+                
+                // Wrap input to style it like the terminal
+                let controller = document.querySelector('.sys-chat-controller');
+                if (!controller) {
+                    controller = document.createElement('div');
+                    controller.className = 'sys-chat-controller';
+                }
+                controller.appendChild(chatInputContainer);
+                
+                // Adjust input layout
+                chatInputContainer.style.maxWidth = '800px';
+                chatInputContainer.style.display = 'flex';
+                
+                const canvas = document.getElementById('sys-chat-canvas');
+                
+                // Sposta Canvas e Controller direttamente nel body (architettura evaluation)
+                if (canvas) {
+                    document.body.appendChild(canvas);
+                    canvas.style.display = 'flex';
+                }
+                document.body.appendChild(controller);
+                
+                // Nascondi l'intera impalcatura della Home Page
+                const sysMain = document.getElementById('sys-main');
+                if (sysMain) sysMain.style.display = 'none';
+
+                // Mostra il bottone dell'Oracolo (che di default è invisibile sulla home)
+                const oracleBtn = document.getElementById('sys-oracle-btn');
+                if (oracleBtn) oracleBtn.style.display = 'flex';
+
+                // Il logo ora deve ricaricare la pagina (riportare alla home)
+                const logoLink = document.getElementById('sys-logo-link');
+                if (logoLink) {
+                    logoLink.href = 'index.html';
+                    logoLink.removeAttribute('target');
+                    logoLink.removeAttribute('rel');
+                }
+            };
+
+            const restoreHomeLayout = () => {
+                // Per garantire che la home e lo stato interno della chat (evaluation.js)
+                // siano "completamente resettati" (evitando glitch logici se si riavvia la chat),
+                // il modo più sicuro ed efficace è un full reload.
+                window.location.reload();
+            };
+
+            // AI Badge & Popup Logic
+            const aiBadge = document.getElementById('sys-ai-badge');
+            const aiPopup = document.getElementById('sys-ai-popup');
+            const aiPopupText = document.getElementById('sys-ai-popup-text');
+            let aiPopupTimer = null;
+
+            const defaultAiText = "Il sistema integra l'utilizzo dell'AI per assistenza in chat, valutazione interazioni e generazione testi.";
+
+            const showAiPopup = (text = defaultAiText, autoClose = true) => {
+                if (!aiPopup) return;
+                
+                if (aiPopupTimer) clearTimeout(aiPopupTimer);
+                
+                if (text) {
+                    aiPopupText.textContent = text;
+                }
+                
+                aiPopup.classList.add('open');
+                
+                if (autoClose) {
+                    aiPopupTimer = setTimeout(() => {
+                        aiPopup.classList.remove('open');
+                    }, 4000);
+                }
+            };
+
+            const closeAiPopup = () => {
+                if (!aiPopup) return;
+                if (aiPopupTimer) clearTimeout(aiPopupTimer);
+                aiPopup.classList.remove('open');
+            };
+
+            if (aiBadge && aiPopup) {
+                // Click manuale
+                aiBadge.addEventListener('click', () => {
+                    if (aiPopup.classList.contains('open')) {
+                        closeAiPopup();
+                    } else {
+                        showAiPopup(defaultAiText, true);
+                    }
+                });
+
+                // Hover per fermare il timer
+                aiPopup.addEventListener('mouseenter', () => {
+                    if (aiPopupTimer) clearTimeout(aiPopupTimer);
+                });
+                aiPopup.addEventListener('mouseleave', () => {
+                    aiPopupTimer = setTimeout(() => {
+                        aiPopup.classList.remove('open');
+                    }, 2000);
+                });
+            }
+
+            // Chiusura al typing (globale)
+            document.addEventListener('input', (e) => {
+                if (e.target.tagName.toLowerCase() === 'textarea' || e.target.tagName.toLowerCase() === 'input') {
+                    closeAiPopup();
+                }
+            });
+            
+            // Listener fittizio per intercettare l'Oracolo usando il delegation
+            document.body.addEventListener('click', (e) => {
+                const oracleBtn = e.target.closest('#sys-oracle-btn');
+                if (oracleBtn && !oracleBtn.classList.contains('sys-oracle-trigger--active')) {
+                    showAiPopup("Le risposte dell'Oracolo sono generate in tempo reale tramite Intelligenza Artificiale.", true);
+                }
+            });
+
+            // Listen for the evaluation script triggering the actual chat
+            document.addEventListener('chatStarted', () => {
+                // Se non siamo già sull'hash della chat, pushiamo il nuovo stato nella history
+                if (window.location.hash !== '#chat') {
+                    history.pushState({ view: 'chat' }, '', '#chat');
+                }
+                startChatLayout();
+                
+                setTimeout(() => {
+                    showAiPopup("Sistema valutativo AI inizializzato.", true);
+                }, 500);
+            });
+
+            const autoTriggerChat = () => {
+                setTimeout(() => {
+                    const sendBtn = document.getElementById('sys-chat-send');
+                    if (sendBtn && !window.isEvaluationStarted) {
+                        sendBtn.click();
+                        window.isEvaluationStarted = true;
+                    }
+                }, 300);
+            };
+
+            // Gestione dei tasti Avanti e Indietro (History API)
+            window.addEventListener('popstate', (e) => {
+                if (window.location.hash === '#chat') {
+                    startChatLayout();
+                    autoTriggerChat();
+                } else {
+                    restoreHomeLayout();
+                }
+            });
+            
+            // Auto start if landing on #chat
+            if (window.location.hash === '#chat') {
+                startChatLayout();
+                autoTriggerChat();
+            }
+
+        });
+    </script>
 
 </body>
 

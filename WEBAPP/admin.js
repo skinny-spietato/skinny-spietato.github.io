@@ -6,7 +6,7 @@
 // ARCHITETTURA: ROUTER FETCH ASINCRONO
 // =========================================================================  
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqvVJ7mJhJz2ZemAxTl1puBVvivAQ1Ld0ogGIL7_9gdhd9e5dCsugLXGQ3htqNe7z9Gw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1sfWsHFTQF1objznqF-veXAy74_MxnAPn8MGLA7c8Vk5Tb86RJHveYSLxXHVN11R5Rw/exec";
 
 // [STATO DI SISTEMA] - Memoria volatile
 let masterPassword = "";
@@ -65,8 +65,10 @@ function collegaSensori() {
     // --- Financial Override live display [Mod 1B] ---
     const priceInput = document.getElementById('input-price');
     const overrideSelect = document.getElementById('override-acconto');
+    const overrideSconto = document.getElementById('override-sconto');
     if (priceInput) priceInput.addEventListener('input', aggiornCalcDisplay);
     if (overrideSelect) overrideSelect.addEventListener('change', aggiornCalcDisplay);
+    if (overrideSconto) overrideSconto.addEventListener('change', aggiornCalcDisplay);
 
     // --- Search Bar Globale e Sorting [Mod 3A/4A] ---
     const searchInput = document.getElementById('sys-global-search');
@@ -87,6 +89,7 @@ function collegaSensori() {
             if (s) { s.value = ''; filtraTabelle(''); }
         });
     });
+
 
     // --- Accordion Ispezione ---
     document.querySelectorAll('.inspect-section-header').forEach(header => {
@@ -398,6 +401,7 @@ async function gestisciLogin() {
             Notification.requestPermission();
         }
         if (typeof setupBackgroundPolling === 'function') setupBackgroundPolling();
+
     }
 
     // Ripristino bottone
@@ -414,6 +418,7 @@ async function ricaricaDashboard() {
         dashboardData = res;
         renderTables();
         if (typeof calcolaNodiRiceventi === 'function') calcolaNodiRiceventi();
+
     }
 }
 
@@ -436,11 +441,14 @@ function renderTables() {
     renderTabellaCompletati();
     renderTabellaCongelati();
 
+
+
     // Aggiorna l'HUD analitico
     aggiornaWidgetAnalitici(dashboardData);
 
     // Aggiorna il Ledger Mensile con i dati reali
     renderArchivioMensile();
+
 
     // Aggiorna la lista utenti (tab UTENTI)
     renderListaUtenti();
@@ -606,6 +614,25 @@ function formatBudget(val) {
 /**
  * Istanze in sospeso.
  */
+
+/**
+ * Estrae il tag [OFFER: ...] dalle internalNotes
+ * Restituisce { cleanNotes, offerTag }
+ */
+function extractOfferData(notesStr) {
+    if (!notesStr) return { cleanNotes: '', offerTag: null };
+    const offerMatch = notesStr.match(/\[OFFER:\s*([^\]]+)\]/i);
+    let offerTag = null;
+    let cleanNotes = notesStr;
+    if (offerMatch && offerMatch[1]) {
+        offerTag = offerMatch[1].trim();
+        cleanNotes = notesStr.replace(offerMatch[0], '').replace(' |  | ', ' | ').trim();
+        if (cleanNotes.startsWith('| ')) cleanNotes = cleanNotes.substring(2).trim();
+        if (cleanNotes.endsWith(' |')) cleanNotes = cleanNotes.substring(0, cleanNotes.length - 2).trim();
+    }
+    return { cleanNotes, offerTag };
+}
+
 function renderTabellaDaPreventivare() {
     const tbody = document.getElementById('table-body-pending');
     if (!tbody) return;
@@ -622,8 +649,12 @@ function renderTabellaDaPreventivare() {
         // in dati legacy salvati col vecchio formato "Nome - +39...")
         const nome      = extractClientName(item.clientName);
         const email     = item.clientEmail || '—';
-        const scope     = item.scope       || '—';
+        let scope     = item.scope       || '—';
         const budget    = formatBudget(item.budget);
+        const offerData = extractOfferData(item.internalNotes);
+        if (offerData.offerTag) {
+            scope += `<br><span class="badge-offer">${offerData.offerTag}</span>`;
+        }
 
         let timeFormatted = 'N/A';
         try { timeFormatted = new Date(timestamp).toLocaleDateString('it-IT'); } catch(e) {}
@@ -663,7 +694,11 @@ function renderTabellaInAttesa() {
         const id        = item.idIstanza  || 'N/A';
         const nome      = extractClientName(item.clientName);
         const email     = item.clientEmail || '—';
-        const budget    = formatBudget(item.budget);
+        let budgetHtml    = `€ ${formatBudget(item.budget)}`;
+        const offerData = extractOfferData(item.internalNotes);
+        if (offerData.offerTag) {
+            budgetHtml += `<br><span class="badge-offer">${offerData.offerTag}</span>`;
+        }
         const acconto   = item.acconto ? `€ ${item.acconto}` : 'N/A';
 
         let timeFormatted = 'N/A';
@@ -674,7 +709,7 @@ function renderTabellaInAttesa() {
             <td>${id}</td>
             <td>${nome}</td>
             <td>${email}</td>
-            <td>€ ${budget}</td>
+            <td>${budgetHtml}</td>
             <td>${acconto}</td>
             <td class="actions-cell">
                 <button class="btn-primary" onclick="apriIspezione('${id}')">ISPEZIONA</button>
@@ -704,8 +739,12 @@ function renderTabellaAttivi() {
         const id        = item.idIstanza  || 'N/A';
         const nome      = extractClientName(item.clientName);
         const email     = item.clientEmail || '—';
-        const scope     = item.scope       || '—';
+        let scope     = item.scope       || '—';
         const budget    = formatBudget(item.budget);
+        const offerData = extractOfferData(item.internalNotes);
+        if (offerData.offerTag) {
+            scope += `<br><span class="badge-offer">${offerData.offerTag}</span>`;
+        }
 
         let timeFormatted = 'N/A';
         let deltaGiorni = 0;
@@ -739,7 +778,7 @@ function renderTabellaAttivi() {
             <td>${nome}</td>
             <td>${email}</td>
             <td>${scope}</td>
-            <td>€ ${budget}</td>
+            <td>${budgetHtml}</td>
             <td><span class="${badgeClass}">${badgeLabel}</span></td>
             <td class="actions-cell">
                 <button class="btn-primary" onclick="apriIspezione('${id}')">ISPEZIONA</button>
@@ -808,7 +847,11 @@ function renderTabellaCompletati() {
         const id        = item.idIstanza   || 'N/A';
         const nome      = extractClientName(item.clientName);
         const email     = item.clientEmail || '—';
-        const budget    = formatBudget(item.budget);
+        let budgetHtml    = `€ ${formatBudget(item.budget)}`;
+        const offerData = extractOfferData(item.internalNotes);
+        if (offerData.offerTag) {
+            budgetHtml += `<br><span class="badge-offer">${offerData.offerTag}</span>`;
+        }
 
         let timeFormatted = 'N/A';
         let deltaGiorni = 0;
@@ -833,7 +876,7 @@ function renderTabellaCompletati() {
             <td>${id}</td>
             <td>${nome}</td>
             <td>${email}</td>
-            <td>€ ${budget}</td>
+            <td>${budgetHtml}</td>
             <td>${badgeHtml}</td>
             <td class="actions-cell">
                 <button class="btn-primary" onclick="apriIspezione('${id}')">ISPEZIONA</button>
@@ -865,7 +908,11 @@ function renderTabellaCongelati() {
         const id        = item.idIstanza   || 'N/A';
         const nome      = extractClientName(item.clientName);
         const email     = item.clientEmail || '—';
-        const budget    = formatBudget(item.budget);
+        let budgetHtml    = `€ ${formatBudget(item.budget)}`;
+        const offerData = extractOfferData(item.internalNotes);
+        if (offerData.offerTag) {
+            budgetHtml += `<br><span class="badge-offer">${offerData.offerTag}</span>`;
+        }
         // Estrae il log di sospensione dalle note interne
         const logRaw    = item.internalNotes || '';
         const logMatch  = logRaw.match(/\[SUSPENSION_LOG\]:\s*([^|]+)/i);
@@ -879,7 +926,7 @@ function renderTabellaCongelati() {
             <td>${id}</td>
             <td>${nome}</td>
             <td>${email}</td>
-            <td>€ ${budget}</td>
+            <td>${budgetHtml}</td>
             <td style="color: rgba(100,180,255,0.8); font-size: 0.75rem;">${logTesto}</td>
             <td class="actions-cell">
                 <button class="btn-primary" onclick="apriIspezione('${id}')">ISPEZIONA</button>
@@ -909,6 +956,13 @@ window.apriModalePreventivo = function(index) {
     const elProjectName = document.getElementById('prop-project-name');
     if (elProjectName) elProjectName.value = (selectedInstance.clientName || 'CLIENTE').toUpperCase();
 
+    // Hint Timeline
+    const elHint = document.getElementById('prop-hint-timeline');
+    if (elHint) {
+        const tVal = selectedInstance.deadline && selectedInstance.deadline.trim() !== '' ? selectedInstance.deadline : 'Nessuna preferenza specificata';
+        elHint.textContent = tVal;
+    }
+
     document.getElementById('input-days-arch').value = '';
     document.getElementById('input-days-prod').value = '';
     document.getElementById('input-notes').value = '';
@@ -920,7 +974,9 @@ window.apriModalePreventivo = function(index) {
 
     // Reset Financial Override [Mod 1B]
     const overrideSelect = document.getElementById('override-acconto');
+    const overrideSconto = document.getElementById('override-sconto');
     if (overrideSelect) overrideSelect.value = 'AUTO';
+    if (overrideSconto) overrideSconto.value = '0';
     aggiornCalcDisplay();
 
     // Reset Two-Step UI [Mod 1C]
@@ -949,6 +1005,9 @@ async function eseguiGeneraDraft() {
         .map(el => el.value.trim()).filter(v => v !== '');
 
     const overrideVal = document.getElementById('override-acconto')?.value || 'AUTO';
+    const discountVal = parseInt(document.getElementById('override-sconto')?.value || '0', 10);
+    const finalPrice = price - (price * (discountVal / 100));
+
     // [3] Fix: legge projectName in tempo reale dall'input
     const projectName = (document.getElementById('prop-project-name')?.value || '').trim()
                         || (selectedInstance.clientName || 'PROGETTO SITOSS').toUpperCase();
@@ -961,9 +1020,15 @@ async function eseguiGeneraDraft() {
         projectName,
         daysArch, daysProd,
         techNotes:       notes,
-        priceTotal:      price,
+        priceTotal:      finalPrice,
         assetsList,
-        overrideAcconto: overrideVal
+        overrideAcconto: overrideVal,
+        overrideSconto:  discountVal,
+        // Nuovi campi per PDF dinamico
+        projectGoals:    selectedInstance.projectGoals || '',
+        extraRevisions:  selectedInstance.extraRevisions || '1',
+        timeline:        selectedInstance.deadline || 'N/D',
+        basePrice:       price // Prezzo originale per calcolare lo sconto nel PDF
     };
 
     const draftBtn = document.getElementById('btn-generate-draft');
@@ -1008,13 +1073,17 @@ async function eseguiApprovaEInvia() {
     approveBtn.innerText = 'TRASMISSIONE...';
     approveBtn.disabled = true;
 
+    const basePrice = parseFloat(document.getElementById('input-price')?.value) || 0;
+    const discountVal = parseInt(document.getElementById('override-sconto')?.value || '0', 10);
+    const finalPrice = basePrice - (basePrice * (discountVal / 100));
+
     const res = await sendToBackend('ADMIN_SEND_PROPOSAL', {
         idIstanza:  currentDraftData.idIstanza,
         pdfUrl:     currentDraftData.pdfUrl,
         // [4] Iniezione note tecniche nel body email
         techNotes:  document.getElementById('input-notes')?.value?.trim() || '',
         // [SS-FIX] Espansione Payload per calcolo finanziario server-side
-        priceTotal: parseFloat(document.getElementById('input-price')?.value) || 0,
+        priceTotal: finalPrice,
         overrideAcconto: document.getElementById('override-acconto')?.value || 'AUTO',
         oggettoProgetto: selectedInstance?.scope || 'PROGETTO SITOSS'
     });
@@ -1477,7 +1546,15 @@ window.apriIspezione = function(idIstanza) {
         elSocial.textContent = socialVal;
     }
 
-    document.getElementById('inspect-brief').textContent = briefVal;
+    // Formattazione Brief/Stile/Timeline
+    let formattedBrief = briefVal;
+    if (briefVal !== "NESSUN DATO FORNITO") {
+        formattedBrief = briefVal
+            .split(' | ')
+            .map(part => part.replace(/^(Brief:|Stile:|Timeline:)/, '<span style="color: var(--sys-trigger-active); font-weight: bold;">$1</span>'))
+            .join('<br><br>');
+    }
+    document.getElementById('inspect-brief').innerHTML = formattedBrief;
     document.getElementById('inspect-drive').innerHTML   = driveVal;
     
     // Transcript Chat Parser a bolle
@@ -1718,19 +1795,37 @@ function aggiungiAsset() {
  */
 function aggiornCalcDisplay() {
     const display = document.getElementById('fin-calc-display');
+    const discountDisplay = document.getElementById('fin-discount-display');
     if (!display) return;
 
-    const price = parseFloat(document.getElementById('input-price')?.value) || 0;
+    const basePrice = parseFloat(document.getElementById('input-price')?.value) || 0;
     const overrideVal = document.getElementById('override-acconto')?.value || 'AUTO';
+    const discountVal = parseInt(document.getElementById('override-sconto')?.value || '0', 10);
 
-    if (price <= 0) { display.textContent = '— INSERIRE PREZZO'; return; }
+    if (basePrice <= 0) { 
+        display.textContent = '— INSERIRE PREZZO'; 
+        if (discountDisplay) discountDisplay.textContent = '0% — NESSUN SCONTO';
+        return; 
+    }
 
+    // Calcolo Sconto
+    const discountAmount = basePrice * (discountVal / 100);
+    const finalPrice = basePrice - discountAmount;
+    if (discountDisplay) {
+        if (discountVal > 0) {
+            discountDisplay.textContent = `- € ${discountAmount.toFixed(2)} (${discountVal}%)`;
+        } else {
+            discountDisplay.textContent = '0% — NESSUN SCONTO';
+        }
+    }
+
+    // Calcolo Acconto (sul prezzo finale scontato)
     let percentage;
     if (overrideVal !== 'AUTO') {
         percentage = parseInt(overrideVal, 10) / 100;
     } else {
         // Simula calculateFinancialProtocol (speculare al backend)
-        if (price < 600) {
+        if (finalPrice < 600) {
             percentage = 1.0;
         } else {
             const scope = selectedInstance?.scope || '';
@@ -1738,7 +1833,7 @@ function aggiornCalcDisplay() {
         }
     }
 
-    const importo = (price * percentage).toFixed(2);
+    const importo = (finalPrice * percentage).toFixed(2);
     const label = overrideVal !== 'AUTO' ? `OVERRIDE ${overrideVal}%` : 'AUTO';
     display.textContent = `€ ${importo} (${label})`;
 }
@@ -1759,14 +1854,16 @@ function highlightTranscript(text) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
 
-    // 2. Regex highlight (ordine: link > money > urgency)
+    // 2. Regex highlight (ordine: link > money > urgency > data-prefixes)
     return escaped
         .replace(/(https?:\/\/[^\s&]+)/g,
             '<span class="sys-highlight sys-highlight--link">$1</span>')
         .replace(/(\b\d+[kK]\b|\b€\s*\d+|\b\d{3,}\b)/g,
             '<span class="sys-highlight sys-highlight--money">$1</span>')
         .replace(/\b(asap|urgente|domani|subito|entro|deadline|scadenza|prima possibile)\b/gi,
-            '<span class="sys-highlight sys-highlight--urgency">$1</span>');
+            '<span class="sys-highlight sys-highlight--urgency">$1</span>')
+        .replace(/(PROJECT BRIEF:|VISUAL STYLE:|TIMELINE:)/g,
+            '<span style="color: var(--sys-trigger-active); font-weight: bold;">$1</span>');
 }
 
 // =========================================================================
