@@ -6,7 +6,7 @@
 // ARCHITETTURA: ROUTER FETCH ASINCRONO
 // =========================================================================  
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1sfWsHFTQF1objznqF-veXAy74_MxnAPn8MGLA7c8Vk5Tb86RJHveYSLxXHVN11R5Rw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqvVJ7mJhJz2ZemAxTl1puBVvivAQ1Ld0ogGIL7_9gdhd9e5dCsugLXGQ3htqNe7z9Gw/exec";
 
 // [STATO DI SISTEMA] - Memoria volatile
 let masterPassword = "";
